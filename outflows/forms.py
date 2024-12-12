@@ -1,9 +1,9 @@
 from django import forms
-from .models import Inflow
+from .models import Outflow
 
-class InflowCreateForm(forms.ModelForm):
+class OutflowCreateForm(forms.ModelForm):
     class Meta:
-        model = Inflow
+        model = Outflow
         fields = ["quantity",]
         widgets = {
             'quantity': forms.NumberInput(attrs={'class': 'form-control'})

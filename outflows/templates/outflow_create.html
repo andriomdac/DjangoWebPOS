@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Saídas{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-dark text-white">
+            <h3>Adicionar Saída de Produto</h3>
+        </div>
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-warning">
+                        {{error}}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ product.brand }}</h6>
+            <p class="card-text">{{ product.description }}</p>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="description" class="form-label">Quantidade</label>
+                    {{ form.quantity }}
+                </div>
+                <div class="d-flex flex-column gap-3 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Adicionar</button>
+                    <a href="{% url 'product_list' %}"><button type="button" class="btn btn-secondary btn-lg w-100">Retornar</button></a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

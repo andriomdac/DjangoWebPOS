@@ -16,11 +16,7 @@ def inflow_create_view(request, pk):
             inflow.product = product
             inflow.save()
             return redirect('inflow_list')
-    if request.method == 'GET':
-        return render(request, template_name='inflow_create.html', context={'form': form, 'product': product})
-
-            
-
+    return render(request, template_name='inflow_create.html', context={'form': form, 'product': product})
 
 
 class InflowListView(ListView):
@@ -28,7 +24,3 @@ class InflowListView(ListView):
     template_name = 'inflow_list.html'
     context_object_name = 'inflows'
     ordering = ['-created_at']
-
-    def get_context_data(self):
-        context = super().get_context_data()
-        return context
