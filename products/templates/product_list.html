@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Produtos{% endblock %}
+{% block content %}
+<br>
+    <div class="row">
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="col-md-6">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Buscar">
+                <button class="btn btn-outline-primary" type="button" id="button-addon2"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+        <div class="col-md-3 d-flex justify-content-end">
+            <a href="{% url 'product_create' %}">
+                <button type="button" class="btn btn-success"><i class="bi bi-plus-circle"></i> Novo(a)</button>
+            </a>
+        </div>
+    </div><br>
+
+    <table class="table">
+        <thead class="table-dark">
+            <tr>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Nome
+                </th>
+                <th>
+                    Marca
+                </th>
+                <th>
+                    Preço de Custo
+                </th>
+                <th>
+                    Preço de Venda
+                </th>
+                <th>
+                    Quantidade
+                </th>
+                <th>
+                    Ações
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for product in products %}
+        <tr>
+            <td>
+                {{product.id}}
+            </td>
+            <td>
+                {{product.name}}
+            </td>
+            <td>
+                {{product.brand}}
+            </td>
+            <td>
+                {{product.cost_price}}
+            </td>
+            <td>
+                {{product.selling_price}}
+            </td>
+            <td>
+                {{product.quantity}}
+            </td>
+            <td>
+                <a href="{% url 'inflow_create' product.pk %}">
+                    <button type="button" class="btn btn-success"><i class="bi bi-box-arrow-in-right"></i></button>
+                </a>
+                <a href="{% url 'product_detail' product.pk %}">
+                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
+                </a>
+                <a href="{% url 'product_update' product.pk %}">
+                    <button type="button" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
+                </a>
+                <a href="{% url 'product_delete' product.pk %}">
+                    <button type="button" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                </a>
+            </td>
+        </tr>
+
+    {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

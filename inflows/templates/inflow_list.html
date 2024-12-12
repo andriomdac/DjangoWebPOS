@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Entradas{% endblock %}
+{% block content %}
+<br>
+    <div class="row">
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="col-md-6">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Buscar">
+                <button class="btn btn-outline-primary" type="button" id="button-addon2"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div><br>
+
+    <table class="table">
+        <thead class="table-dark">
+            <tr>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Criação do Registro
+                </th>
+                <th>
+                    Atualização
+                </th>
+                <th>
+                    Produto
+                </th>
+                <th>
+                    Quantidade
+                </th>
+                <th>
+                    Ações
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for inflow in inflows %}
+        <tr>
+            <td>
+                {{inflow.id}}
+            </td>
+            <td>
+                {{inflow.created_at}}
+            </td>
+            <td>
+                {{inflow.updated_at}}
+            </td>
+            <td>
+                {{inflow.product}}
+            </td>
+            <td>
+                {{inflow.quantity}}
+            </td>
+            <td>
+                <a href="#">
+                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
+                </a>
+                <a href="#">
+                    <button type="button" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                </a>
+            </td>
+        </tr>
+
+    {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

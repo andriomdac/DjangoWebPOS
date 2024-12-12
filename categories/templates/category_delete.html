@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Categorias{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-dark text-white">
+            <h3>Deletar Marca</h3>
+        </div>
+        <div class="card-body text-center">
+            {% if message %}
+                <div class="alert alert-danger"><h4>{{ message }}</h4></div>
+            {% endif %}
+            <div class="mb-4">
+                <h1>Deletar "{{ object.name }}"?</h1>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex flex-column gap-3 mt-4">
+                    <button type="submit" class="btn btn-danger btn-lg w-100">Deletar</button>
+                    <a href="{% url 'category_list' %}" class="btn btn-secondary btn-lg w-100">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

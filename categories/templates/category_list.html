@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Categorias{% endblock %}{% block content %}
+<br>
+    <div class="row">
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="col-md-6">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Buscar">
+                <button class="btn btn-outline-primary" type="button" id="button-addon2"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+        <div class="col-md-3 d-flex justify-content-end">
+            <a href="{% url 'category_create' %}">
+                <button type="button" class="btn btn-success"><i class="bi bi-plus-circle"></i> Novo(a)</button>
+            </a>
+        </div>
+    </div><br>
+
+    <table class="table">
+        <thead class="table-dark">
+            <tr>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Categoria
+                </th>
+                <th>
+                    Descrição
+                </th>
+                <th>
+                    Ações
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for category in categories %}
+        <tr>
+            <td>
+                {{category.id}}
+            </td>
+            <td>
+                {{category.name}}
+            </td>
+            <td>
+                {{category.description}}
+            </td>
+            <td>
+                <a href="{% url 'category_detail' category.pk %}">
+                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
+                </a>
+                <a href="{% url 'category_update' category.pk %}">
+                    <button type="button" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
+                </a>
+                <a href="{% url 'category_delete' category.pk %}">
+                    <button type="button" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
+                </a>
+            </td>
+        </tr>
+
+    {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
