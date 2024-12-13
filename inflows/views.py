@@ -4,6 +4,7 @@ from .models import Inflow
 from .forms import InflowCreateForm
 from django.urls import reverse_lazy
 from products.models import Product
+from django.contrib import messages
 
 
 def inflow_create_view(request, pk):
@@ -15,7 +16,8 @@ def inflow_create_view(request, pk):
             inflow = form.save(commit=False)
             inflow.product = product
             inflow.save()
-            return redirect('inflow_list')
+            messages.success(request, f'Entrada de {inflow.quantity} unidades do produto "{product.name}" registrada.')
+            return redirect('product_list')
     return render(request, template_name='inflow_create.html', context={'form': form, 'product': product})
 
 

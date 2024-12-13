@@ -4,7 +4,7 @@ from .models import Outflow
 from .forms import OutflowCreateForm
 from django.urls import reverse_lazy
 from products.models import Product
-
+from django.contrib import messages
 
 def outflow_create_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -15,7 +15,8 @@ def outflow_create_view(request, pk):
             outflow = form.save(commit=False)
             outflow.product = product
             outflow.save()
-            return redirect('outflow_list')
+            messages.success(request, f'Saída de {outflow.quantity} unidades do produto "{product.name}" registrada.')
+            return redirect('product_list')
     return render(request, template_name='outflow_create.html', context={'form': form, 'product': product})
 
 

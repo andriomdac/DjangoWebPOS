@@ -15,7 +15,7 @@ class CategoryCreateView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, f'Categoria {self.object.name} criada com sucesso!')
+        messages.success(self.request, f'Categoria "{self.object.name}" criada com sucesso!')
         return response
 
 
