@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Entradas{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-dark text-white">
+            <h3>{{ inflow.created_at }}</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>ID:</strong> {{ inflow.id }}</p>
+            <p><strong>Produto:</strong> {{ inflow.product }}</p>
+            <p><strong>Marca:</strong> {{ inflow.product.brand }}</p>
+            <p><strong>Quantidade:</strong> {{ inflow.quantity }}</p>
+        </div>
+    </div>
+</div>
+<br>
+<a href="{% url 'inflow_list' %}"><button type="button" class="btn btn-secondary btn-lg w-100">Retornar</button></a>
+{% endblock %}

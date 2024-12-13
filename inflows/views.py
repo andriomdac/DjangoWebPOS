@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .models import Inflow
 from .forms import InflowCreateForm
 from django.urls import reverse_lazy
@@ -16,7 +16,7 @@ def inflow_create_view(request, pk):
             inflow = form.save(commit=False)
             inflow.product = product
             inflow.save()
-            messages.success(request, f'Entrada de {inflow.quantity} unidades do produto "{product.name}" registrada.')
+            messages.success(request, f'Entrada de {inflow.quantity} unidade(s) do produto "{product.name}" registrada.')
             return redirect('product_list')
     return render(request, template_name='inflow_create.html', context={'form': form, 'product': product})
 
@@ -26,3 +26,9 @@ class InflowListView(ListView):
     template_name = 'inflow_list.html'
     context_object_name = 'inflows'
     ordering = ['-created_at']
+
+
+class InflowDetailView(DetailView):
+    model = Inflow
+    template_name = 'inflow_detail.html'
+    context_object_name = 'inflow'

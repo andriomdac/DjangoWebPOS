@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .models import Outflow
 from .forms import OutflowCreateForm
 from django.urls import reverse_lazy
@@ -15,7 +15,7 @@ def outflow_create_view(request, pk):
             outflow = form.save(commit=False)
             outflow.product = product
             outflow.save()
-            messages.success(request, f'Saída de {outflow.quantity} unidades do produto "{product.name}" registrada.')
+            messages.success(request, f'Saída de {outflow.quantity} unidade(s) do produto "{product.name}" registrada.')
             return redirect('product_list')
     return render(request, template_name='outflow_create.html', context={'form': form, 'product': product})
 
@@ -25,3 +25,9 @@ class OutflowListView(ListView):
     template_name = 'outflow_list.html'
     context_object_name = 'outflows'
     ordering = ['-created_at']
+
+
+class OutflowDetailView(DetailView):
+    model = Outflow
+    template_name = 'outflow_detail.html'
+    context_object_name = 'outflow'
