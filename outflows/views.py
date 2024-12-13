@@ -26,6 +26,12 @@ class OutflowListView(ListView):
     context_object_name = 'outflows'
     ordering = ['-created_at']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(product__name__icontains=search)
+        return queryset
 
 class OutflowDetailView(DetailView):
     model = Outflow

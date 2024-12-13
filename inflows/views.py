@@ -27,6 +27,13 @@ class InflowListView(ListView):
     context_object_name = 'inflows'
     ordering = ['-created_at']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(product__name__icontains=search)
+        return queryset
+
 
 class InflowDetailView(DetailView):
     model = Inflow

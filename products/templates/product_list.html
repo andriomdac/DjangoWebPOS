@@ -11,10 +11,12 @@
             </ul>
         {% endif %}
         <div class="col-md-6">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Buscar">
-                <button class="btn btn-outline-primary" type="button" id="button-addon2"><i class="bi bi-search"></i></button>
-            </div>
+            <form method="get">
+                <div class="input-group mb-3">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar">
+                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
         </div>
         <div class="col-md-3"></div>
         <div class="col-md-3 d-flex justify-content-end">
@@ -43,7 +45,7 @@
                     Preço de Venda
                 </th>
                 <th>
-                    Quantidade
+                    Estoque
                 </th>
                 <th>
                     Ações
@@ -76,7 +78,7 @@
                     <button type="button" class="btn btn-success"><i class="bi bi-box-arrow-up"></i></button>
                 </a>
                 <a href="{% url 'outflow_create' product.pk %}">
-                    <button type="button" class="btn btn-light"><i class="bi bi-box-arrow-in-right"></i></button>
+                    <button type="button" class="btn btn-light"><i class="bi bi-box-arrow-down"></i></button>
                 </a>
                 <a href="{% url 'product_detail' product.pk %}">
                     <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>

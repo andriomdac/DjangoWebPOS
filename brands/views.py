@@ -24,6 +24,13 @@ class BrandListView(ListView):
     template_name = 'brand_list.html'
     context_object_name = 'brands'
 
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by('name')
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+        return queryset
+
 
 class BrandUpdateView(UpdateView):
     model = Brand

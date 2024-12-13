@@ -28,6 +28,13 @@ class CategoryListView(ListView):
         context = super().get_context_data()
         return context
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+        return queryset
+
 
 class CategoryUpdateView(UpdateView):
     model = Category

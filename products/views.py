@@ -24,6 +24,13 @@ class ProductListView(ListView):
     template_name = 'product_list.html'
     context_object_name = 'products'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+        return queryset
+
 
 class ProductUpdateView(UpdateView):
     model = Product

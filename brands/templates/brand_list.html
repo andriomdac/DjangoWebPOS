@@ -11,10 +11,13 @@
             </ul>
         {% endif %}
         <div class="col-md-6">
+            <form method="get">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Buscar">
-                <button class="btn btn-outline-primary" type="button" id="button-addon2"><i class="bi bi-search"></i></button>
+                    <input type="text" class="form-control" name="search" placeholder="Buscar">
+                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
             </div>
+        </form>
+
         </div>
         <div class="col-md-3"></div>
         <div class="col-md-3 d-flex justify-content-end">
