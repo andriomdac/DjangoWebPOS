@@ -16,7 +16,7 @@ def inflow_create_view(request, pk):
             inflow = form.save(commit=False)
             inflow.product = product
             inflow.save()
-            messages.success(request, f'Entrada de {inflow.quantity} unidade(s) do produto "{product.name}" registrada.')
+            messages.success(request, f'Entrada de {inflow.quantity} unidade(s) do produto "{product.name} - {product.brand}" registrada.')
             return redirect('product_list')
     return render(request, template_name='inflow_create.html', context={'form': form, 'product': product})
 

@@ -15,7 +15,7 @@ def outflow_create_view(request, pk):
             outflow = form.save(commit=False)
             outflow.product = product
             outflow.save()
-            messages.success(request, f'Saída de {outflow.quantity} unidade(s) do produto "{product.name}" registrada.')
+            messages.success(request, f'Saída de {outflow.quantity} unidade(s) do produto "{product.name} - {product.brand}" registrada.')
             return redirect('product_list')
     return render(request, template_name='outflow_create.html', context={'form': form, 'product': product})
 
