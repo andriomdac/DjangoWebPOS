@@ -3,13 +3,6 @@
 {% block content %}
 <br>
     <div class="row">
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <div class="alert alert-success">{{ message }}</div>
-                {% endfor %}
-            </ul>
-        {% endif %}
         <div class="col-md-6">
             <form method="get">
             <div class="input-group mb-3">
@@ -19,11 +12,25 @@
         </form>
 
         </div>
-        <div class="col-md-3"></div>
-        <div class="col-md-3 d-flex justify-content-end">
-            <a href="{% url 'start_sale' %}">
-                <button type="button" class="btn btn-info"><i class="bi bi-plus-circle"></i> Iniciar Venda </button>
+        <div class="col-md-6 d-flex justify-content-end">
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if has_active_sale %}
+            <button type="button" class="btn btn-warning"><i class="bi bi-plus-circle"></i>
+                    Continuar com a venda
+            </button>
+        {% else %}
+            <a href="{% url 'start_sale' %}" type="button" class="btn btn-success"><i class="bi bi-plus-circle"></i>
+                    Vender
             </a>
+        {% endif %}
+
         </div>
     </div><br>
 

@@ -26,3 +26,8 @@ class PaymentMethodForm(forms.ModelForm):
             'method_name': forms.Select(attrs={'class': 'form-control'}),
             'value': forms.NumberInput(attrs={'class': 'form-control'})
         }
+
+        labels = {
+            'method_name': 'Método de Pagamento',
+            'value': 'Valor'
+        }

@@ -41,7 +41,7 @@ class SaleItem(models.Model):
         null=True,
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0.01, message="O preço total deve ser maior que zero")]
+        validators=[MinValueValidator(0.01, message="O preço total deve ser maior que zero.")]
         )
 
     def __str__(self):
@@ -51,7 +51,7 @@ class SaleItem(models.Model):
 class PaymentMethod(models.Model):
     sale = models.ForeignKey(to=Sale, on_delete=models.PROTECT, related_name='payment_methods', default=1)
     method_name = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
-    value = models.DecimalField(decimal_places=2, max_digits=10, default=0.00)
+    value = models.DecimalField(decimal_places=2, max_digits=10, default=0.00, validators=[MinValueValidator(0.01, message='O valor deve ser maior que zero.')])
 
     def __str__(self):
         return self.method_name

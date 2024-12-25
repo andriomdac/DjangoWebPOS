@@ -6,6 +6,7 @@
     <div class="row">
         <div class="col-md-6">
             <h4>Adicionar Pagamento</h4>
+
             {% if form.errors %}
                 {% for field in form %}
                     {% for error in field.errors %}
@@ -13,12 +14,26 @@
                     {% endfor %}
                 {% endfor %}
             {% endif %}
+
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <div class="alert alert-warning">{{ message }}</div>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
             <form method="post" class="border p-4 rounded shadow-sm bg-auto">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="btn btn-primary btn-lg w-100">Adicionar Pagamento</button><br><br>
-                <a href="#" type="button" class="btn btn-success btn-lg w-100">Finalizar Venda</a>
             </form>
+            {% if sale_is_fully_paid %}
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="name" value="finalize" class="btn btn-success btn-lg w-100">Finalizar Venda</button>
+            </form>
+            {% endif %}
         </div>
 
         <div class="col-md-6">
