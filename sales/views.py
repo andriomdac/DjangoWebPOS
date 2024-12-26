@@ -38,12 +38,16 @@ def sale_cart_view(request):
             try:
                 product = Product.objects.get(barcode=barcode)
                 sale_item = form.save(commit=False)
-                sale_item.product = product
-                sale_item.sale = sale
-                sale_item.price = product.selling_price
-                sale_item.total_price = sale_item.price * sale_item.quantity
-                sale_item.save()
-                return redirect('start_sale')
+                if sale_item.quantity <= product.quantity:
+                    sale_item.product = product
+                    sale_item.sale = sale
+                    sale_item.price = product.selling_price
+                    sale_item.total_price = sale_item.price * sale_item.quantity
+                    sale_item.save()
+                    return redirect('start_sale')
+                else:
+                    messages.error(request, f'Estoque insuficiente do produto: {product.name}. Quantidade disponível: {product.quantity}')
+                    return redirect('start_sale')
             except Product.DoesNotExist:
                 form.add_error('barcode', 'Produto com esse código de barras não existe.')
         else:
