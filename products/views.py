@@ -63,3 +63,8 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
+
+
+def product_return_view(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, template_name='product_return.html')

@@ -61,10 +61,14 @@
                 {{sale.created_at}}
             </td>
             <td>
-                {{sale.payment_method}}
+                {% for payment_method in sale.payment_methods.all %}
+                    <span class="badge bg-secondary">{{ payment_method.method_name }}</span>
+                {% empty %}
+                    <span class="text-muted">Sem métodos de pagamento</span>
+                {% endfor %}
             </td>
             <td>
-                <a href="#">
+                <a href="{% url 'sale_detail' sale.pk %}">
                     <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
                 </a>
             </td>

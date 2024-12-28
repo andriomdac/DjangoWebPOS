@@ -110,3 +110,17 @@ def sale_item_delete(request, pk):
     sale_item = get_object_or_404(SaleItem, id=pk)
     sale_item.delete()
     return redirect('start_sale')
+
+
+def sale_detail_view(request, pk):
+    sale = get_object_or_404(Sale, id=pk)
+    sale_items = sale.items.all()
+    payment_methods = sale.payment_methods.all()
+
+    context = {
+        'sale': sale,
+        'sale_items': sale_items,
+        'payment_methods': payment_methods,
+    }
+    
+    return render(request, template_name='sale_detail.html', context=context)

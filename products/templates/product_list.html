@@ -53,46 +53,60 @@
             </tr>
         </thead>
         <tbody>
-    {% for product in products %}
-        <tr>
-            <td>
-                {{product.id}}
-            </td>
-            <td>
-                {{product.name}}
-            </td>
-            <td>
-                {{product.brand}}
-            </td>
-            <td>
-                {{product.cost_price}}
-            </td>
-            <td>
-                {{product.selling_price}}
-            </td>
-            <td>
-                {{product.quantity}}
-            </td>
-            <td>
-                <a href="{% url 'inflow_create' product.pk %}">
-                    <button type="button" class="btn btn-success"><i class="bi bi-box-arrow-up"></i></button>
-                </a>
-                <a href="{% url 'outflow_create' product.pk %}">
-                    <button type="button" class="btn btn-light"><i class="bi bi-box-arrow-down"></i></button>
-                </a>
-                <a href="{% url 'product_detail' product.pk %}">
-                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
-                </a>
-                <a href="{% url 'product_update' product.pk %}">
-                    <button type="button" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
-                </a>
-                <a href="{% url 'product_delete' product.pk %}">
-                    <button type="button" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
-                </a>
-            </td>
-        </tr>
-
-    {% endfor %}
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.brand }}</td>
+                <td>R$ {{ product.cost_price }}</td>
+                <td>R$ {{ product.selling_price }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>
+                    <div class="dropdown">
+                        <button 
+                            class="btn btn-light dropdown-toggle" 
+                            type="button" 
+                            id="dropdownMenuButton{{ product.id }}" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false">
+                            Opções
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ product.id }}">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'inflow_create' product.pk %}">
+                                    <i class="bi bi-box-arrow-up me-2"></i>Registrar Entrada
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'outflow_create' product.pk %}">
+                                    <i class="bi bi-box-arrow-down me-2"></i>Registrar Saída
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'product_detail' product.pk %}">
+                                    <i class="bi bi-eye-fill me-2"></i>Ver Detalhes
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'product_update' product.pk %}">
+                                    <i class="bi bi-pencil-square me-2"></i>Editar Produto
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'product_return' product.pk %}">
+                                    <i class="bi bi-bag-x me-2"></i>Devolução
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'product_delete' product.pk %}">
+                                    <i class="bi bi-trash-fill me-2"></i>Excluir Produto
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}        
         </tbody>
     </table>
 {% endblock %}
