@@ -5,6 +5,8 @@ from .forms import ProductForm, ProductUpdateForm
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import ProtectedError
+from sales.models import SaleItemReturn
+from sales.forms import SaleItemReturnForm
 
 
 class ProductCreateView(CreateView):
@@ -67,4 +69,20 @@ class ProductDetailView(DetailView):
 
 def product_return_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    return render(request, template_name='product_return.html')
+    form = SaleItemReturnForm()
+
+    if request.method == 'POST':
+        form = SaleItemReturnForm(request.POST)
+        if form.is_valid():
+            return_form = form.save(commit=False)
+            return_form.product = product
+            return_form.value = product.selling_price
+            return_form.save()
+            messages.success(request, f"Devolução do item '{product.name}' realizada com sucesso.")
+            return redirect('product_list')
+
+    context = {
+        'form': form,
+        'product': product
+    }
+    return render(request, template_name='product_return.html', context=context)

@@ -41,10 +41,13 @@
                     ID
                 </th>
                 <th>
-                    Data do Registro
+                    Registro da Venda
                 </th>
                 <th>
                     Método de Pagamentos
+                </th>
+                <th>
+                    Valor da Venda
                 </th>
                 <th>
                     Ações
@@ -66,6 +69,9 @@
                 {% empty %}
                     <span class="text-muted">Sem métodos de pagamento</span>
                 {% endfor %}
+            </td>
+            <td>
+                R$ {{sale.total}}
             </td>
             <td>
                 <a href="{% url 'sale_detail' sale.pk %}">
