@@ -4,7 +4,7 @@ from products.models import Product
 
 class SaleItemForm(forms.ModelForm):
     barcode = forms.IntegerField(
-        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'autofocus': ''}),
         label='Código de Barras'
         )
     class Meta:
@@ -24,7 +24,7 @@ class PaymentMethodForm(forms.ModelForm):
         model = PaymentMethod
         fields = ["method_name", "value",]
         widgets = {
-            'method_name': forms.Select(attrs={'class': 'form-control'}),
+            'method_name': forms.Select(attrs={'class': 'form-control', 'autofocus': ''}),
             'value': forms.NumberInput(attrs={'class': 'form-control'})
         }
 

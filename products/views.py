@@ -62,7 +62,12 @@ def product_item_add_to_sale(request, pk):
                 messages.error(request, "A quantidade deve ser maior ou igual a 1.")
                 return redirect('product_list')
             if quantity > product.quantity:
-                messages.warning(request, f'Erro: Estoque indisponível para essa quantidade. Estoque: {product.quantity}')
+                messages.error(
+                    request,
+                    f'Erro: Estoque indisponível para essa quantidade. Estoque: {product.quantity}',
+                    extra_tags='danger'
+                    )
+
                 return redirect('product_list')
 
             price = product.selling_price

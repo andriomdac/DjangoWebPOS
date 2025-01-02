@@ -30,11 +30,9 @@
     <table class="table table-dark table-striped">
         <thead class="table-dark">
             <tr>
-                {% if sale_id %}
                 <th>
                     Adicionar à Venda
                 </th>
-                {% endif %}
                 <th>
                     ID
                 </th>
@@ -61,7 +59,6 @@
         <tbody>
             {% for product in products %}
             <tr>
-                {% if sale_id %}
                 <td>
                     <form method="post" class="d-flex" action="{% url 'product_item_add_to_sale' product.pk %}">
                         {% csrf_token %}
@@ -73,7 +70,6 @@
                         </div>
                     </form>                    
                 </td>
-                {% endif %}
                 <td>{{ product.id }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.brand }}</td>

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Sale, SaleItem
-from .forms import SaleItemForm, PaymentMethodForm
+from .forms import SaleItemForm, PaymentMethodForm, PaymentMethod
 from django.urls import reverse_lazy
 from products.models import Product
 from django.contrib import messages
@@ -75,9 +75,11 @@ def sale_finalize_view(request):
     sale_payments = sale.payment_methods.all()
     total_paid = sum([payment.value for payment in sale_payments])
     total_payable = sale.total - total_paid
-    sale_is_fully_paid = bool(total_payable == 0)
+    sale_is_fully_paid = bool(total_payable <= 0)
     form = PaymentMethodForm()
 
+    if total_paid > total_payable:
+        messages.success(request, message=f'Troco do Cliente: R$ {total_paid - sale.total}')
     if request.method == 'POST':
         form = PaymentMethodForm(request.POST)
 
@@ -88,11 +90,8 @@ def sale_finalize_view(request):
         
         if form.is_valid():
             payment_method = form.save(commit=False)
-            if payment_method.value > total_payable:
-                messages.error(request, message='Valor do pagamento ultrapassou o restante a ser pago.')
-            else:
-                payment_method.sale = sale
-                payment_method.save()
+            payment_method.sale = sale
+            payment_method.save()
             return redirect('sale_finalize')
 
     return render(request, 'sale_finalize.html', context={
@@ -109,6 +108,11 @@ def sale_item_delete(request, pk):
     sale_item = get_object_or_404(SaleItem, id=pk)
     sale_item.delete()
     return redirect('start_sale')
+
+def payment_method_delete(request, pk):
+    payment_method = get_object_or_404(PaymentMethod, id=pk)
+    payment_method.delete()
+    return redirect('sale_finalize')
 
 
 def sale_detail_view(request, pk):
