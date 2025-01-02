@@ -7,7 +7,7 @@ from django.contrib import messages
 
 
 def sale_list_view(request):
-    sales = Sale.objects.all().order_by('-created_at')    
+    sales = Sale.objects.all().order_by('-created_at')  
     context = {'sales': sales}
 
     if 'sale_id' in request.session:
@@ -101,7 +101,6 @@ def sale_finalize_view(request):
         'form': form,
         'total_payable': total_payable,
         'total_paid': total_paid,
-        'total_payable': total_payable,
         'sale_is_fully_paid': sale_is_fully_paid,
     })
 

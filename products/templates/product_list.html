@@ -6,10 +6,11 @@
         {% if messages %}
             <ul>
                 {% for message in messages %}
-                    <div class="alert alert-success">{{ message }}</div>
+                    <span class="badge bg-{{ message.tags }}">{{ message }}</span>
                 {% endfor %}
             </ul>
         {% endif %}
+    
         <div class="col-md-6">
             <form method="get">
                 <div class="input-group mb-3">
@@ -29,6 +30,11 @@
     <table class="table table-dark table-striped">
         <thead class="table-dark">
             <tr>
+                {% if sale_id %}
+                <th>
+                    Adicionar à Venda
+                </th>
+                {% endif %}
                 <th>
                     ID
                 </th>
@@ -55,6 +61,19 @@
         <tbody>
             {% for product in products %}
             <tr>
+                {% if sale_id %}
+                <td>
+                    <form method="post" class="d-flex" action="{% url 'product_item_add_to_sale' product.pk %}">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <button type="submit" class="btn btn-info">
+                                <i class="bi bi-bag-plus-fill"></i>
+                            </button>
+                            <input type="number" name="quantity" class="form-control" value="1" placeholder="Quantidade" min="1" required>
+                        </div>
+                    </form>                    
+                </td>
+                {% endif %}
                 <td>{{ product.id }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.brand }}</td>

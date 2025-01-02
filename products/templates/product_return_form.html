@@ -20,12 +20,12 @@
                 {% csrf_token %}
 
                 <div class="mb-4">
-                    <label for="quantity" class="form-label">Quantidade</label>
+                    <label for="quantity" class="form-label">Quantidade a ser devolvida</label>
                     {{ form.quantity }}
                 </div>
 
                 <div class="mb-4">
-                    <label for="value" class="form-label">Valor</label>
+                    <label for="value" class="form-label">Valor do reembolso (preço atual do produto: {{product.selling_price}})</label>
                     {{ form.value }}
                 </div>
 

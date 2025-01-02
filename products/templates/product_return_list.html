@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Saídas{% endblock %}
+{% block title %}Entradas{% endblock %}
 {% block content %}
 <br>
     <div class="row">
         {% if messages %}
             <ul>
                 {% for message in messages %}
-                    <span class="badge bg-{{ message.tags }}">{{ message }}</span>
+                    <div class="alert alert-success">{{ message }}</div>
                 {% endfor %}
             </ul>
         {% endif %}
@@ -21,51 +21,43 @@
         <div class="col-md-3"></div>
     </div><br>
 
-    <table class="table table-dark table-striped-columns">
+    <table class="table table-dark table-striped">
         <thead class="table-dark">
             <tr>
                 <th>
                     ID
                 </th>
                 <th>
-                    Criação do Registro
-                </th>
-                <th>
                     Produto
                 </th>
                 <th>
-                    Marca
+                    Data do Registro
                 </th>
                 <th>
                     Quantidade
                 </th>
                 <th>
-                    Ações
+                    Valor do Reembolso
                 </th>
             </tr>
         </thead>
         <tbody>
-    {% for outflow in outflows %}
+    {% for product in product_list %}
         <tr>
             <td>
-                {{outflow.id}}
+                {{product.id}}
             </td>
             <td>
-                {{outflow.created_at}}
+                {{product.product}}
             </td>
             <td>
-                {{outflow.product}}
+                {{product.created_at}}
             </td>
             <td>
-                {{outflow.product.brand}}
+                {{product.quantity}}
             </td>
             <td>
-                {{outflow.quantity}}
-            </td>
-            <td>
-                <a href="{% url 'outflow_detail' outflow.pk %}">
-                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
-                </a>
+                {{product.value}}
             </td>
         </tr>
 

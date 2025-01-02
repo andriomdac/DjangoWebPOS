@@ -29,10 +29,9 @@ class ProductForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
+        brand = self.cleaned_data.get('brand')
         if len(name) <= 3:
             raise forms.ValidationError('Nome muito curto, tente outro.')
-        if Product.objects.filter(name=name).exists():
-            raise forms.ValidationError("Um produto com este nome já existe.")
         return name
 
     def clean_barcode(self):

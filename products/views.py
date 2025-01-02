@@ -1,12 +1,13 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import CreateView, ListView, UpdateView, DetailView
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.views.generic import CreateView, UpdateView, DetailView
 from .models import Product
 from .forms import ProductForm, ProductUpdateForm
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import ProtectedError
 from sales.models import SaleItemReturn
-from sales.forms import SaleItemReturnForm
+from sales.forms import SaleItemReturnForm, SaleItemForm
+from sales.models import Sale, SaleItem
 
 
 class ProductCreateView(CreateView):
@@ -21,17 +22,71 @@ class ProductCreateView(CreateView):
         return response
 
 
-class ProductListView(ListView):
-    model = Product
-    template_name = 'product_list.html'
-    context_object_name = 'products'
+def product_list_view(request):
+    products = Product.objects.all()
+    search = request.GET.get('search')
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search = self.request.GET.get('search')
-        if search:
-            queryset = queryset.filter(name__icontains=search)
-        return queryset
+    if search:
+        products = products.filter(name__icontains=search)
+
+    context = {
+        'products': products,
+    }
+    if 'sale_id' in request.session:
+        context['sale_id'] = request.session['sale_id']
+        sale = get_object_or_404(Sale, id=context['sale_id'])
+        if sale.items.all().count() > 0:
+            context['active_sale'] = request.session['sale_id']
+            messages.warning(request, "Existe uma venda em aberto")
+            return render(request, 'product_list.html', context)
+        else:
+            sale.delete()
+            del request.session['sale_id']
+
+    return render(request, 'product_list.html', context)
+
+
+def product_item_add_to_sale(request, pk):
+    if not request.session.get('sale_id'):
+        sale = Sale.objects.create()
+        request.session['sale_id'] = sale.id
+    else:
+        sale = get_object_or_404(Sale, id=request.session['sale_id'])
+
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == 'POST':
+        try:
+            quantity = int(request.POST.get('quantity', 1))
+            if quantity < 1:
+                messages.error(request, "A quantidade deve ser maior ou igual a 1.")
+                return redirect('product_list')
+            if quantity > product.quantity:
+                messages.warning(request, f'Erro: Estoque indisponível para essa quantidade. Estoque: {product.quantity}')
+                return redirect('product_list')
+
+            price = product.selling_price
+            total_price = quantity * price
+
+            SaleItem.objects.create(
+                sale=sale,
+                product=product,
+                quantity=quantity,
+                price=price,
+                total_price=total_price
+            )
+
+            messages.success(request, "Produto adicionado à venda com sucesso!")
+            return redirect('product_list')
+
+        except ValueError:
+            messages.error(request, "Quantidade inválida.")
+            return redirect('product_list')
+
+    else:
+        messages.error(request, "Método de requisição inválido.")
+        return redirect('product_list')
+
 
 
 class ProductUpdateView(UpdateView):
@@ -85,4 +140,12 @@ def product_return_view(request, pk):
         'form': form,
         'product': product
     }
-    return render(request, template_name='product_return.html', context=context)
+    return render(request, template_name='product_return_form.html', context=context)
+
+
+def product_return_list_view(request):
+    product_list = SaleItemReturn.objects.all().order_by('-created_at')
+    context = {
+        'product_list': product_list,
+    }
+    return render(request, template_name="product_return_list.html", context=context)

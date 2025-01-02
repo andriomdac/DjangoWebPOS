@@ -18,6 +18,7 @@ class SaleItemForm(forms.ModelForm):
         }
 
 
+
 class PaymentMethodForm(forms.ModelForm):
     class Meta:
         model = PaymentMethod

@@ -49,7 +49,7 @@ class SaleItem(models.Model):
 
 
 class PaymentMethod(models.Model):
-    sale = models.ForeignKey(to=Sale, on_delete=models.PROTECT, related_name='payment_methods', default=1)
+    sale = models.ForeignKey(to=Sale, on_delete=models.CASCADE, related_name='payment_methods', default=1)
     method_name = models.CharField(
         max_length=20,
         choices=PAYMENT_METHOD_CHOICES
@@ -80,6 +80,8 @@ class SaleItemReturn(models.Model):
         validators=[MinValueValidator(0.01,
         message='O valor deve ser maior que zero.')]
         )
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
         return self.product.name
 
