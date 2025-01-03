@@ -5,7 +5,10 @@ from .forms import OutflowCreateForm
 from django.urls import reverse_lazy
 from products.models import Product
 from django.contrib import messages
+from django.db import transaction
 
+
+@transaction.atomic
 def outflow_create_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
     form = OutflowCreateForm()

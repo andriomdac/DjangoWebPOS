@@ -6,7 +6,7 @@ class ProductForm(forms.ModelForm):
         model = Product
         exclude = ["created_at", "updated_at", "quantity",]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'autofocus': ''}),
             'brand': forms.Select(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),

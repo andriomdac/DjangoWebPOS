@@ -8,6 +8,7 @@ from django.db.models import ProtectedError
 from sales.models import SaleItemReturn
 from sales.forms import SaleItemReturnForm, SaleItemForm
 from sales.models import Sale, SaleItem
+from django.db import transaction
 
 
 class ProductCreateView(CreateView):
@@ -46,6 +47,7 @@ def product_list_view(request):
     return render(request, 'product_list.html', context)
 
 
+@transaction.atomic
 def product_item_add_to_sale(request, pk):
     if not request.session.get('sale_id'):
         sale = Sale.objects.create()

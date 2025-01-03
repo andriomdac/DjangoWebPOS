@@ -4,6 +4,7 @@ from .forms import SaleItemForm, PaymentMethodForm, PaymentMethod
 from django.urls import reverse_lazy
 from products.models import Product
 from django.contrib import messages
+from django.db import transaction
 
 
 def sale_list_view(request):
@@ -23,7 +24,7 @@ def sale_list_view(request):
 
     return render(request, 'sale_list.html', context)
 
-
+@transaction.atomic
 def sale_cart_view(request):
     if not request.session.get('sale_id'):    
         sale = Sale.objects.create()
@@ -69,7 +70,7 @@ def sale_cart_view(request):
         'sale_has_items': sale_has_items,
         })
 
-
+@transaction.atomic
 def sale_finalize_view(request):
     sale = get_object_or_404(Sale, id=request.session['sale_id'])
     sale_payments = sale.payment_methods.all()
@@ -78,7 +79,7 @@ def sale_finalize_view(request):
     sale_is_fully_paid = bool(total_payable <= 0)
     form = PaymentMethodForm()
 
-    if total_paid > total_payable:
+    if total_paid > sale.total:
         messages.success(request, message=f'Troco do Cliente: R$ {total_paid - sale.total}')
     if request.method == 'POST':
         form = PaymentMethodForm(request.POST)
@@ -113,7 +114,6 @@ def payment_method_delete(request, pk):
     payment_method = get_object_or_404(PaymentMethod, id=pk)
     payment_method.delete()
     return redirect('sale_finalize')
-
 
 def sale_detail_view(request, pk):
     sale = get_object_or_404(Sale, id=pk)

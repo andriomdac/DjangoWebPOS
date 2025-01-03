@@ -7,7 +7,7 @@ class BrandForm(forms.ModelForm):
         model = Brand
         fields = ["name", "description",]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'autofocus': ''}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5})
         }
 
