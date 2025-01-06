@@ -19,7 +19,13 @@
                 </div>
             </form>
         </div>
-        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            {% if sale_id %}
+            <a href="{% url 'start_sale' %}">
+                <button type="button" class="btn btn-warning"><i class="bi bi-cart-fill"></i> Ir para Carrinho</button>
+            </a>
+            {% endif %}
+        </div>
         <div class="col-md-3 d-flex justify-content-end">
             <a href="{% url 'product_create' %}">
                 <button type="button" class="btn btn-success"><i class="bi bi-plus-circle"></i> Novo(a)</button>

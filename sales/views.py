@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
+from decimal import Decimal
 
 
 def sale_list_view(request):
@@ -73,14 +74,6 @@ def sale_cart_view(request):
 @transaction.atomic
 def sale_finalize_view(request):
     sale = get_object_or_404(Sale, id=request.session['sale_id'])
-    sale_payments = sale.payment_methods.all()
-    total_paid = sum([payment.value for payment in sale_payments])
-    total_payable = sale.total - total_paid
-    sale_is_fully_paid = bool(total_payable <= 0)
-    form = PaymentMethodForm()
-
-    if total_paid > sale.total:
-        messages.success(request, message=f'Troco do Cliente: R$ {total_paid - sale.total}')
     if request.method == 'POST':
         form = PaymentMethodForm(request.POST)
 
@@ -93,16 +86,44 @@ def sale_finalize_view(request):
             payment_method = form.save(commit=False)
             payment_method.sale = sale
             payment_method.save()
+            request.session['payment_method_id'] = payment_method.pk
             return redirect('sale_finalize')
 
-    return render(request, 'sale_finalize.html', context={
+    sale_payments = sale.payment_methods.all()
+    form = PaymentMethodForm()
+    total_paid = sum([payment.value for payment in sale_payments])
+    total_payable = sale.total - total_paid
+    sale_is_fully_paid = bool(total_payable <= 0)
+    sale_has_change = bool(total_paid > sale.total)
+    change = total_paid - sale.total
+
+    if 'payment_method_id' in request.session:
+        payment_method_id = request.session['payment_method_id']
+    else:
+        payment_method_id = None
+
+    print(f'''Total Pago: {total_paid}
+    Total a pagar: {total_payable}
+    Venda está completamente paga: {sale_is_fully_paid}
+    Venda tem troco: {sale_has_change}
+    Troco do Cliente: {change}
+    ID do método de pagamento: {payment_method_id}''')
+
+    context = {
         'sale': sale,
         'sale_payments': sale_payments,
         'form': form,
         'total_payable': total_payable,
         'total_paid': total_paid,
         'sale_is_fully_paid': sale_is_fully_paid,
-    })
+        'sale_has_change': sale_has_change,
+        'change': change,
+    }
+
+    if sale_is_fully_paid:
+        context['sale_is_fully_paid'] = sale_is_fully_paid
+
+    return render(request, 'sale_finalize.html', context=context)
 
 
 def sale_item_delete(request, pk):

@@ -83,7 +83,7 @@ def product_item_add_to_sale(request, pk):
                 total_price=total_price
             )
 
-            messages.success(request, "Produto adicionado à venda com sucesso!")
+            messages.success(request, f"Produto '{product.name}' adicionado à venda com sucesso!")
             return redirect('product_list')
 
         except ValueError:
@@ -147,6 +147,10 @@ def product_return_view(request, pk):
         'form': form,
         'product': product
     }
+
+    if 'sale_id' in request.session:
+        context['sale_id'] = request.session['sale_id']
+
     return render(request, template_name='product_return_form.html', context=context)
 
 

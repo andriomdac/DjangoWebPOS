@@ -1,5 +1,7 @@
 from django import forms
 from .models import Outflow
+from products.models import Product
+
 
 class OutflowCreateForm(forms.ModelForm):
     class Meta:

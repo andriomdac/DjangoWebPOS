@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="light">
+<html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,25 +9,22 @@
     <title>Joan Suplementos</title>
   </head>
 
-  <header class="p-3 text-bg-dark">
-    <div class="container-fluid">
-      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-        </a>
-
-        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="#" class="nav-link px-2 text-secondary">{% block title %}{% endblock%}</a></li>
-        </ul>
-
-        <div class="text-end">
-          <button type="button" class="btn btn-warning">Logout</button>
+  <body>
+    <header class="p-3 text-bg-dark">
+      <div class="container-fluid">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+          </a>
+          <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="#" class="nav-link px-2 text-secondary">{% block title %}{% endblock%}</a></li>
+          </ul>
+          <div class="text-end">
+            <button type="button" class="btn btn-warning">Logout</button>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
-  
+    </header>
 
-  <body>
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-2">
@@ -36,13 +33,47 @@
         <div class="col-sm-10">
           {% block content %}{% endblock %}
         </div>
+      </div>
     </div>
-  </body>
 
-  <footer class="py-3 my-4 px-0">
+    <!-- Loading spinner -->
+    <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1049;">
+      <div id="loading-spinner" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1050;">
+        <div class="spinner-grow text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const forms = document.querySelectorAll("form");
+
+          forms.forEach(function (form) {
+              form.addEventListener("submit", function () {
+                  document.getElementById("loading-overlay").style.display = "block";
+              });
+          });
+
+          const links = document.querySelectorAll("a.redirect-with-spinner");
+          links.forEach(function (link) {
+              link.addEventListener("click", function () {
+                  document.getElementById("loading-overlay").style.display = "block";
+              });
+          });
+
+          // Hide spinner on page load (e.g., for history navigation)
+          window.addEventListener("pageshow", () => {
+              document.getElementById("loading-overlay").style.display = "none";
+          });
+      });
+    </script>
+
+    <footer class="py-3 my-4 px-0">
       <p class="text-center text-muted">
         © 2024 Joan Suplementos
       </p>
-  </footer>
-  
+    </footer>
+  </body>
 </html>

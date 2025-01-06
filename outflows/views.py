@@ -17,6 +17,9 @@ def outflow_create_view(request, pk):
         if form.is_valid():
             outflow = form.save(commit=False)
             outflow.product = product
+            if product.quantity < outflow.quantity:
+                messages.error(request, f'Erro: Estoque insuficiente para essa saída. Estoque: {product.quantity}', extra_tags='danger')
+                return redirect('outflow_create', pk=pk)
             outflow.save()
             messages.success(request, f'Saída de {outflow.quantity} unidade(s) do produto "{product.name} - {product.brand}" registrada.')
             return redirect('product_list')

@@ -5,7 +5,14 @@
     <div class="card shadow-lg">
         <div class="card-header text-center bg-dark text-white">
             <h3>Adicionar Saída de Produto</h3>
-        </div>
+        </div><br>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <span class="badge bg-{{ message.tags }}">{{ message }}</span>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {% if form.errors %}
             {% for field in form %}
                 {% for error in field.errors %}
