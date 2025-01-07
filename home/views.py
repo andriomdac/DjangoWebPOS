@@ -28,9 +28,6 @@ def dashboard_view(request):
         .order_by('-total_quantity') \
         .first()
 
-    # Total Payments Received (daily)
-    total_payments_today = PaymentMethod.objects.filter(sale__in=sales_today).aggregate(total_payments=Sum('value'))['total_payments'] or 0.00
-
     # Profit (daily)
     profit_today = SaleItem.objects.filter(sale__in=sales_today) \
         .annotate(profit=F('quantity') * (F('product__selling_price') - F('product__cost_price'))) \
@@ -56,7 +53,6 @@ def dashboard_view(request):
         'num_items_sold_today': num_items_sold_today,
         'returns_total_value': returns_total_value,
         'top_selling_product': top_selling_product,
-        'total_payments_today': total_payments_today,
         'profit_today': profit_today,
         'total_stock_value': total_stock_value,
         'total_stock_profit': total_stock_profit,

@@ -3,146 +3,118 @@
 {% block title %}Painel de Controle{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container mt-4">
     <div class="row">
-        <!-- Display Today's Date -->
-        <div class="col-md-12 mb-3">
-            <div class="card shadow-sm border-info">
-                <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">Data de Hoje</h5>
-                </div>
-                <div class="card-body">
-                    <h3 class="text-center">{{ today_date }}</h3>
-                    <p class="text-center">Data de referência para os dados apresentados</p>
-                </div>
-            </div>
+        <div class="col-12 text-center mb-4">
+            <h1 class="display-4">Painel de Controle</h1>
+            <p class="text-muted">Data de hoje: {{ today_date }}</p>
         </div>
     </div>
 
-    <div class="row">
-        <!-- Cartão de Valor Total de Vendas -->
+    <div class="row text-center">
+        <!-- Sales Summary -->
         <div class="col-md-4 mb-3">
-            <div class="card shadow-sm border-primary">
+            <div class="card border-primary">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">Valor Total de Vendas</h5>
+                    <h5>Total de Vendas</h5>
                 </div>
                 <div class="card-body">
-                    <h3 class="text-center">R${{ sales_total_value|floatformat:2 }}</h3>
-                    <p class="text-center">Valor total das vendas de hoje</p>
+                    <h2 class="text-primary">R$ {{ sales_total_value|floatformat:2 }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Cartão de Número de Vendas Hoje -->
+        <!-- Number of Sales -->
         <div class="col-md-4 mb-3">
-            <div class="card shadow-sm border-success">
+            <div class="card border-success">
                 <div class="card-header bg-success text-white">
-                    <h5 class="card-title mb-0">Número de Vendas</h5>
+                    <h5>Número de Vendas Hoje</h5>
                 </div>
                 <div class="card-body">
-                    <h3 class="text-center">{{ num_sales_today }}</h3>
-                    <p class="text-center">Número de vendas realizadas hoje</p>
+                    <h2 class="text-success">{{ num_sales_today }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Cartão de Número de Itens Vendidos Hoje -->
+        <!-- Items Sold -->
         <div class="col-md-4 mb-3">
-            <div class="card shadow-sm border-info">
+            <div class="card border-info">
                 <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">Itens Vendidos</h5>
+                    <h5>Itens Vendidos Hoje</h5>
                 </div>
                 <div class="card-body">
-                    <h3 class="text-center">{{ num_items_sold_today }}</h3>
-                    <p class="text-center">Número total de itens vendidos hoje</p>
+                    <h2 class="text-info">{{ num_items_sold_today }}</h2>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <!-- Cartão de Valor das Devoluções -->
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm border-danger">
+    <div class="row text-center">
+        <!-- Returns Summary -->
+        <div class="col-md-6 mb-3">
+            <div class="card border-danger">
                 <div class="card-header bg-danger text-white">
-                    <h5 class="card-title mb-0">Valor das Devoluções</h5>
+                    <h5>Valor de Devoluções</h5>
                 </div>
                 <div class="card-body">
-                    <h3 class="text-center">R${{ returns_total_value|floatformat:2 }}</h3>
-                    <p class="text-center">Valor total dos itens devolvidos hoje</p>
+                    <h2 class="text-danger">R$ {{ returns_total_value|floatformat:2 }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Cartão de Total de Pagamentos Recebidos -->
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm border-secondary">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0">Total de Pagamentos Recebidos</h5>
-                </div>
-                <div class="card-body">
-                    <h3 class="text-center">R${{ total_payments_today|floatformat:2 }}</h3>
-                    <p class="text-center">Valor total dos pagamentos recebidos hoje</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cartão de Lucro Total de Hoje -->
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm border-warning">
+        <!-- Profit Today -->
+        <div class="col-md-6 mb-3">
+            <div class="card border-warning">
                 <div class="card-header bg-warning text-white">
-                    <h5 class="card-title mb-0">Lucro Total de Hoje</h5>
+                    <h5>Lucro Hoje</h5>
                 </div>
                 <div class="card-body">
-                    <h3 class="text-center">R${{ profit_today|floatformat:2 }}</h3>
-                    <p class="text-center">Lucro total das vendas realizadas hoje</p>
+                    <h2 class="text-warning">R$ {{ profit_today|floatformat:2 }}</h2>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <!-- Cartão do Produto Mais Vendido -->
-        <div class="col-md-12 mb-3">
-            <div class="card shadow-sm border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">Produto Mais Vendido</h5>
+        <!-- Top Selling Product -->
+        <div class="col-12 mb-3">
+            <div class="card border-dark">
+                <div class="card-header bg-dark text-white">
+                    <h5>Produto Mais Vendido</h5>
                 </div>
                 <div class="card-body">
                     {% if top_selling_product %}
-                    <h4 class="text-center">{{ top_selling_product.product__name }}</h4>
-                    <p class="text-center">Vendidas {{ top_selling_product.total_quantity }} unidades hoje</p>
+                        <h4>{{ top_selling_product.product__name }}</h4>
+                        <p>Quantidade: {{ top_selling_product.total_quantity }}</p>
                     {% else %}
-                    <p class="text-center">Sem dados de vendas disponíveis para hoje</p>
+                        <p class="text-muted">Sem dados de vendas disponíveis para hoje</p>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Cartão de Valor Total de Estoque -->
-    <div class="row">
+    <div class="row text-center">
+        <!-- Stock Summary -->
         <div class="col-md-6 mb-3">
-            <div class="card shadow-sm border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">Valor Total de Estoque</h5>
+            <div class="card border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5>Valor Total do Estoque</h5>
                 </div>
                 <div class="card-body">
-                    <h3 class="text-center">R${{ total_stock_value|floatformat:2 }}</h3>
-                    <p class="text-center">Valor total do estoque atual</p>
+                    <h2 class="text-secondary">R$ {{ total_stock_value|floatformat:2 }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Cartão de Lucro Total do Estoque -->
+        <!-- Stock Profit -->
         <div class="col-md-6 mb-3">
-            <div class="card shadow-sm border-warning">
-                <div class="card-header bg-warning text-white">
-                    <h5 class="card-title mb-0">Lucro Total do Estoque</h5>
+            <div class="card border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h5>Lucro Total do Estoque</h5>
                 </div>
                 <div class="card-body">
-                    <h3 class="text-center">R${{ total_stock_profit }}</h3>
-                    <p class="text-center">Lucro total potencial do estoque atual</p>
+                    <h2 class="text-secondary">R$ {{ total_stock_profit }}</h2>
                 </div>
             </div>
         </div>

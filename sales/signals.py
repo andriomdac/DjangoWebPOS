@@ -25,4 +25,9 @@ def sale_item_return_post_save(sender, created, instance, **kwargs):
         product = instance.product
         product.quantity += instance.quantity
         product.save()
+
+
+def payment_method_post_save(sender, created, instance, **kwargs):
+    if created:
+        ...
     

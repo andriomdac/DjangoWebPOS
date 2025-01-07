@@ -74,6 +74,14 @@ def sale_cart_view(request):
 @transaction.atomic
 def sale_finalize_view(request):
     sale = get_object_or_404(Sale, id=request.session['sale_id'])
+    form = PaymentMethodForm()
+    sale_payments = sale.payment_methods.all()
+    total_paid = sum([payment.value for payment in sale_payments])
+    
+    if total_paid < sale.total:
+        if 'change' in request.session:
+            del request.session['change']
+
     if request.method == 'POST':
         form = PaymentMethodForm(request.POST)
 
@@ -81,33 +89,38 @@ def sale_finalize_view(request):
             messages.success(request, message=f"Venda {request.session['sale_id']} realizada com sucesso!")
             del request.session['sale_id']
             return redirect('sale_list')
+
+        if request.POST.get("name") == "discount":
+            discount_value = Decimal(request.POST.get("value", 0))
+            if discount_value > 0 and discount_value < sale.total:
+                sale.total -= discount_value
+                sale.save()
+                messages.success(request, f"Desconto de R$ {discount_value:.2f} atribuido à venda.")
+            else:
+                messages.error(request, "Valor do desconto deve ser maior que zero.")
+            return redirect('sale_finalize')
+        
         
         if form.is_valid():
+
             payment_method = form.save(commit=False)
             payment_method.sale = sale
             payment_method.save()
-            request.session['payment_method_id'] = payment_method.pk
+
+            sale_payments = sale.payment_methods.all()
+            total_paid = sum([payment.value for payment in sale_payments])
+
+            if total_paid > sale.total: change = total_paid - sale.total
+            else: change = None
+            if change:
+                payment_method.value -= change
+                payment_method.save()
+                messages.warning(request, f'Troco do Cliente: {change}')
+                request.session['change'] = float(change)
             return redirect('sale_finalize')
 
-    sale_payments = sale.payment_methods.all()
-    form = PaymentMethodForm()
-    total_paid = sum([payment.value for payment in sale_payments])
     total_payable = sale.total - total_paid
     sale_is_fully_paid = bool(total_payable <= 0)
-    sale_has_change = bool(total_paid > sale.total)
-    change = total_paid - sale.total
-
-    if 'payment_method_id' in request.session:
-        payment_method_id = request.session['payment_method_id']
-    else:
-        payment_method_id = None
-
-    print(f'''Total Pago: {total_paid}
-    Total a pagar: {total_payable}
-    Venda está completamente paga: {sale_is_fully_paid}
-    Venda tem troco: {sale_has_change}
-    Troco do Cliente: {change}
-    ID do método de pagamento: {payment_method_id}''')
 
     context = {
         'sale': sale,
@@ -116,13 +129,14 @@ def sale_finalize_view(request):
         'total_payable': total_payable,
         'total_paid': total_paid,
         'sale_is_fully_paid': sale_is_fully_paid,
-        'sale_has_change': sale_has_change,
-        'change': change,
     }
+
+    if 'change' in request.session:
+        context['change'] = request.session['change']
 
     if sale_is_fully_paid:
         context['sale_is_fully_paid'] = sale_is_fully_paid
-
+    
     return render(request, 'sale_finalize.html', context=context)
 
 

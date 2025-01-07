@@ -19,15 +19,11 @@
 
             <!-- Display Messages -->
             {% if messages %}
-                <div class="mt-3">
-                    <ul class="list-unstyled">
-                        {% for message in messages %}
-                            <li>
-                                <div class="alert bg-{{ message.tags }} mb-2">{{ message }}</div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                <ul>
+                    {% for message in messages %}
+                        <span class="badge bg-{{ message.tags }}">{{ message }}</span>
+                    {% endfor %}
+                </ul>
             {% endif %}
 
             <!-- Finalize Sale Button -->
@@ -41,7 +37,7 @@
             <form method="post" class="border p-4 rounded shadow-sm">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Adicionar Pagamento</button> 
+                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Adicionar Pagamento</button>
             </form>
             {% endif %}
 
@@ -56,6 +52,15 @@
                     <h5>Total da Venda:</h5>
                     <span class="badge text-bg-info fs-5 px-3 py-2">R$ {{ sale.total }}</span>
                 </div>
+                <form method="post" class="d-flex">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <button type="submit" name="name" value="discount" class="btn btn-dark">
+                            <i class="bi bi-cash"></i>
+                        </button>
+                        <input type="number" name="value" class="form-control" placeholder="Desconto" min="1" required>
+                    </div>
+                </form><br>
 
                 <!-- Payment Breakdown -->
                 <div class="border rounded p-3 mb-3">
@@ -63,7 +68,7 @@
                         <h5>Total Pago:</h5>
                         <span class="badge text-bg-success fs-5 px-3 py-2">R$ {{ total_paid }}</span>
                     </div>
-                    {% if sale_has_change %}
+                    {% if change %}
                         <div class="d-flex justify-content-between align-items-center">
                             <h5>Troco:</h5>
                             <span class="badge text-bg-light fs-5 px-3 py-2">R$ {{ change }}</span>

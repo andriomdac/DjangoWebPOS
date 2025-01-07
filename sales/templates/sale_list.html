@@ -67,7 +67,7 @@
                 {% for payment_method in sale.payment_methods.all %}
                     <span class="badge bg-secondary">{{ payment_method.method_name }}</span>
                 {% empty %}
-                    <span class="text-muted">Sem métodos de pagamento</span>
+                    <span class="badge bg-warning">Venda Aberta</span>
                 {% endfor %}
             </td>
             <td>
