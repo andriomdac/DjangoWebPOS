@@ -1,6 +1,7 @@
 from django import forms
 from .models import Product
 
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -29,7 +30,6 @@ class ProductForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        brand = self.cleaned_data.get('brand')
         if len(name) <= 3:
             raise forms.ValidationError('Nome muito curto, tente outro.')
         return name

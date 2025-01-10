@@ -1,5 +1,5 @@
 [flake8]
-extend-ignore = E203, C901
+extend-ignore = E203
 exclude =
     .gitignore,
     __pycache__,
@@ -9,5 +9,5 @@ exclude =
     manage.py,
     requirements.txt,
     migrations,
-
+max-line-length = 100
 max-complexity = 10

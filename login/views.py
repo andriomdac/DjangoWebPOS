@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -11,7 +12,11 @@ def login_view(request):
             login(request, user)
             return redirect('dashboard')
         else:
-            messages.error(request, 'Erro ao acessar. Verifique seu usuário e/ou senha.', extra_tags='danger')
+            messages.error(
+                request,
+                'Erro ao acessar. Verifique seu usuário e/ou senha.',
+                extra_tags='danger'
+                )
             return redirect('login')
     return render(request, 'login.html')
 

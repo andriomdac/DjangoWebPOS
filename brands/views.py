@@ -52,17 +52,19 @@ class BrandDetailView(LoginRequiredMixin, DetailView):
     template_name = 'brand_detail.html'
     context_object_name = 'brand'
 
+
 @login_required()
 def brand_delete_view(request, pk):
     brand_object = get_object_or_404(Brand, id=pk)
     if request.method == 'POST':
-        try: 
+        try:
             brand_object.delete()
             messages.success(request, f'Marca "{brand_object.name}" deletada com sucesso!')
             return redirect('brand_list')
         except ProtectedError:
             return render(request, template_name='brand_delete.html', context={
                 'object': brand_object,
-                'message': f'Não é possível deletar a marca "{brand_object.name}", pois está sendo utilizada por um ou mais produtos'
+                'message': f'''Não é possível deletar a marca "{brand_object.name}",
+                            pois está sendo utilizada por um ou mais produtos'''
                 })
     return render(request, template_name='brand_delete.html', context={'object': brand_object})

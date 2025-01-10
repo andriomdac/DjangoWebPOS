@@ -26,7 +26,7 @@ class BrandForm(forms.ModelForm):
         if len(name) <= 3:
             raise forms.ValidationError('Nome muito curto, tente outro.')
         if Brand.objects.filter(name__icontains=name):
-            raise forms.ValidationError('Já existe uma marca com esse nome.')        
+            raise forms.ValidationError('Já existe uma marca com esse nome.')
         return name
 
 

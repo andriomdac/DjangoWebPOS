@@ -1,16 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Sale, SaleItem
 from .forms import SaleItemForm, PaymentMethodForm, PaymentMethod
-from django.urls import reverse_lazy
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 
+
 @login_required
 def sale_list_view(request):
-    sales = Sale.objects.all().order_by('-created_at')  
+    sales = Sale.objects.all().order_by('-created_at')
     context = {'sales': sales}
 
     if 'sale_id' in request.session:
@@ -18,7 +18,11 @@ def sale_list_view(request):
 
         if sale.items.all().count() > 0:
             context['active_sale'] = request.session['sale_id']
-            messages.warning(request, "Existe uma venda em aberto, finalize-a para criar uma nova")
+            messages.warning(
+                request,
+                """Existe uma venda em aberto,
+                finalize-a para criar uma nova"""
+                )
             return render(request, 'sale_list.html', context)
         else:
             sale.delete()
@@ -26,10 +30,11 @@ def sale_list_view(request):
 
     return render(request, 'sale_list.html', context)
 
+
 @login_required
 @transaction.atomic
 def sale_cart_view(request):
-    if not request.session.get('sale_id'):    
+    if not request.session.get('sale_id'):
         sale = Sale.objects.create()
         request.session['sale_id'] = sale.id
     else:
@@ -50,10 +55,17 @@ def sale_cart_view(request):
                     sale_item.save()
                     return redirect('start_sale')
                 else:
-                    messages.error(request, f'Estoque insuficiente do produto: {product.name}. Quantidade disponível: {product.quantity}')
+                    messages.error(
+                        request,
+                        f'''Estoque insuficiente do produto: {product.name}.
+                        Quantidade disponível: {product.quantity}'''
+                        )
                     return redirect('start_sale')
             except Product.DoesNotExist:
-                form.add_error('barcode', 'Produto com esse código de barras não existe.')
+                form.add_error(
+                    'barcode',
+                    'Produto com esse código de barras não existe.'
+                    )
         else:
             form = SaleItemForm(request.POST)
     else:
@@ -61,7 +73,7 @@ def sale_cart_view(request):
 
     sale_items = sale.items.all()
     sale_has_items = bool(sale_items)
-    
+
     sale_total_price = sum([item.total_price for item in sale_items])
     sale.total = sale_total_price
     sale.save()
@@ -72,6 +84,7 @@ def sale_cart_view(request):
         'sale_total': sale_total_price,
         'sale_has_items': sale_has_items,
         })
+
 
 @login_required
 @transaction.atomic

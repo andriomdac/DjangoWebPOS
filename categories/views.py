@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
 class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     template_name = 'category_create.html'
@@ -16,7 +17,10 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, f'Categoria "{self.object.name}" criada com sucesso!')
+        messages.success(
+            self.request,
+            f'Categoria "{self.object.name}" criada com sucesso!'
+            )
         return response
 
 
@@ -45,23 +49,33 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, f'Categoria "{self.object.name}" alterada com sucesso!')
+        messages.success(
+            self.request,
+            f'Categoria "{self.object.name}" alterada com sucesso!'
+            )
         return response
+
 
 @login_required()
 def category_delete_view(request, pk):
     category_object = get_object_or_404(Category, id=pk)
     if request.method == 'POST':
-        try: 
+        try:
             category_object.delete()
             messages.success(request, f'Categoria "{category_object.name}" deletada com sucesso!')
             return redirect('category_list')
         except ProtectedError:
             return render(request, template_name='category_delete.html', context={
                 'object': category_object,
-                'message': f'Não é possível deletar a categoria "{category_object.name}", pois está sendo utilizada por um ou mais produtos'
+                'message': f'''Não é possível deletar a categoria "{category_object.name}",
+                            pois está sendo utilizada por um ou mais produtos'''
                 })
-    return render(request, template_name='category_delete.html', context={'object': category_object})
+    return render(
+        request,
+        template_name='category_delete.html',
+        context={
+            'object': category_object
+            })
 
 
 class CategoryDetailView(LoginRequiredMixin, DetailView):

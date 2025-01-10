@@ -1,6 +1,5 @@
 from django import forms
 from .models import Outflow
-from products.models import Product
 
 
 class OutflowCreateForm(forms.ModelForm):
@@ -10,7 +9,7 @@ class OutflowCreateForm(forms.ModelForm):
         widgets = {
             'quantity': forms.NumberInput(attrs={'class': 'form-control'})
         }
-    
+
     def clean_quantity(self):
         quantity = self.cleaned_data['quantity']
         if quantity < 1:

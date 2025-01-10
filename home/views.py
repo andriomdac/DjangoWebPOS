@@ -1,16 +1,20 @@
 from django.shortcuts import render
-from sales.models import Sale, SaleItemReturn, SaleItem, PaymentMethod
+from sales.models import Sale, SaleItemReturn, SaleItem
 from datetime import date, datetime
 from django.db.models import Sum, F
 from products.models import Product
 from django.contrib.auth.decorators import login_required
+
 
 @login_required()
 def dashboard_view(request):
     # Get query_date from request, default to today
     query_date_str = request.GET.get('query_date')  # Adjusted to match the GET method
     try:
-        query_date = datetime.strptime(query_date_str, '%Y-%m-%d').date() if query_date_str else date.today()
+        if query_date_str:
+            query_date = datetime.strptime(query_date_str, '%Y-%m-%d').date()
+        else:
+            query_date = date.today()
     except ValueError:
         query_date = date.today()  # Fallback to today if parsing fails
 
@@ -18,7 +22,11 @@ def dashboard_view(request):
     sales_today = Sale.objects.filter(created_at__date=query_date)
     sales_total_value = sum([sale.total for sale in sales_today])
     num_sales_today = sales_today.count()
-    num_items_sold_today = SaleItem.objects.filter(sale__in=sales_today).aggregate(total_items=Sum('quantity'))['total_items'] or 0
+    num_items_sold_today = SaleItem.objects.filter(
+        sale__in=sales_today
+        ).aggregate(
+            total_items=Sum('quantity')
+            )['total_items'] or 0
 
     # Returns and profit
     returns_total_value = SaleItemReturn.objects.filter(created_at__date=query_date).aggregate(

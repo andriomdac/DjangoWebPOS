@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, UpdateView, DetailView
 from .models import Product
 from .forms import ProductForm, ProductUpdateForm
@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import ProtectedError
 from sales.models import SaleItemReturn
-from sales.forms import SaleItemReturnForm, SaleItemForm
+from sales.forms import SaleItemReturnForm
 from sales.models import Sale, SaleItem
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
@@ -21,8 +21,12 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, f'Produto "{self.object.name}" adicionado com sucesso!')
+        messages.success(
+            self.request,
+            f'Produto "{self.object.name}" adicionado com sucesso!'
+            )
         return response
+
 
 @login_required
 def product_list_view(request):
@@ -48,6 +52,7 @@ def product_list_view(request):
 
     return render(request, 'product_list.html', context)
 
+
 @login_required
 @transaction.atomic
 def product_item_add_to_sale(request, pk):
@@ -68,7 +73,8 @@ def product_item_add_to_sale(request, pk):
             if quantity > product.quantity:
                 messages.error(
                     request,
-                    f'Erro: Estoque indisponível para essa quantidade. Estoque: {product.quantity}',
+                    f'''Erro: Estoque indisponível para essa quantidade.
+                        Estoque: {product.quantity}''',
                     extra_tags='danger'
                     )
 
@@ -97,7 +103,6 @@ def product_item_add_to_sale(request, pk):
         return redirect('product_list')
 
 
-
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     template_name = 'product_update.html'
@@ -121,7 +126,8 @@ def product_delete_view(request, pk):
         except ProtectedError:
             return render(request, template_name='product_delete.html', context={
                 'object': product,
-                'message': f'Não foi possível deletar o produto "{product.name}", pois ele está sendo utilizado em uma ou mais vendas passadas.'
+                'message': f'''Não foi possível deletar o produto "{product.name}",
+                                pois ele está sendo utilizado em uma ou mais vendas passadas.'''
             })
     return render(request, template_name='product_delete.html', context={'object': product})
 

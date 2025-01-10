@@ -1,12 +1,13 @@
 from django import forms
 from .models import SaleItem, PaymentMethod, SaleItemReturn
-from products.models import Product
+
 
 class SaleItemForm(forms.ModelForm):
     barcode = forms.IntegerField(
         widget=forms.NumberInput(attrs={'class': 'form-control', 'autofocus': ''}),
         label='Código de Barras'
         )
+
     class Meta:
         model = SaleItem
         fields = ["quantity",]
@@ -16,7 +17,6 @@ class SaleItemForm(forms.ModelForm):
         labels = {
             'quantity': 'Quantidade'
         }
-
 
 
 class PaymentMethodForm(forms.ModelForm):

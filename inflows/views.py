@@ -2,12 +2,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
 from .models import Inflow
 from .forms import InflowCreateForm
-from django.urls import reverse_lazy
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 @login_required
 @transaction.atomic
@@ -20,9 +20,19 @@ def inflow_create_view(request, pk):
             inflow = form.save(commit=False)
             inflow.product = product
             inflow.save()
-            messages.success(request, f'Entrada de {inflow.quantity} unidade(s) do produto "{product.name} - {product.brand}" registrada.')
+            messages.success(
+                request,
+                f'''Entrada de {inflow.quantity}
+                    unidade(s) do produto "{product.name} - {product.brand}"
+                    registrada.''')
             return redirect('product_list')
-    return render(request, template_name='inflow_create.html', context={'form': form, 'product': product})
+    return render(
+        request,
+        template_name='inflow_create.html',
+        context={
+            'form': form,
+            'product': product
+            })
 
 
 class InflowListView(LoginRequiredMixin, ListView):

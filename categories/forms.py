@@ -1,6 +1,7 @@
 from django import forms
 from .models import Category
 
+
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
@@ -19,9 +20,10 @@ class CategoryForm(forms.ModelForm):
         if len(name) <= 3:
             raise forms.ValidationError('Nome muito curto, tente outro.')
         if Category.objects.filter(name__icontains=name):
-            raise forms.ValidationError('Já existe uma categoria com esse nome.')     
+            raise forms.ValidationError('Já existe uma categoria com esse nome.')
 
         return name
+
 
 class CategoryUpdateForm(CategoryForm):
     def clean_name(self):
