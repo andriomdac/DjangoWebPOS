@@ -22,5 +22,15 @@ def login_view(request):
 
 
 def logout_view(request):
+    if 'sale_id' in request.session:
+        messages.error(
+            request,
+            '''Erro ao fazer logout:
+            você possui uma venda em aberto,
+            finalize-a para sair do sistema''',
+            extra_tags='danger'
+        )
+        return redirect('start_sale')
+
     logout(request)
     return redirect('login')
