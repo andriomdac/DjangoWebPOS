@@ -6,8 +6,10 @@ from django.urls import reverse_lazy
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-
+@login_required
 @transaction.atomic
 def inflow_create_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -23,7 +25,7 @@ def inflow_create_view(request, pk):
     return render(request, template_name='inflow_create.html', context={'form': form, 'product': product})
 
 
-class InflowListView(ListView):
+class InflowListView(LoginRequiredMixin, ListView):
     model = Inflow
     template_name = 'inflow_list.html'
     context_object_name = 'inflows'
@@ -37,7 +39,7 @@ class InflowListView(ListView):
         return queryset
 
 
-class InflowDetailView(DetailView):
+class InflowDetailView(LoginRequiredMixin, DetailView):
     model = Inflow
     template_name = 'inflow_detail.html'
     context_object_name = 'inflow'

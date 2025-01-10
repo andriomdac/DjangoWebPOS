@@ -7,7 +7,31 @@
     <div class="row">
         <div class="col-12 text-center mb-4">
             <h1 class="display-4">Painel de Controle</h1>
-            <p class="text-muted">Data de hoje: {{ today_date }}</p>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <form method="GET" action="{% url 'dashboard' %}" class="justify-content-center p-4 shadow-sm bg-light rounded">
+                        <div class="input-group input-group-lg">
+                            <input 
+                                type="date" 
+                                class="form-control rounded-start" 
+                                id="query_date" 
+                                name="query_date" 
+                                value="{{ request.GET.query_date|default:'' }}" 
+                                placeholder="Selecione uma data">
+                            <button 
+                                type="submit" 
+                                class="btn btn-primary rounded-end">
+                                Consultar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div><br>
+            
+
+            <h4 class="text-muted">{{ query_date }}</h4>
+
         </div>
     </div>
 

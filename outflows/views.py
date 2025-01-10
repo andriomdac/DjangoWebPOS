@@ -6,8 +6,11 @@ from django.urls import reverse_lazy
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
+@login_required
 @transaction.atomic
 def outflow_create_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -26,7 +29,7 @@ def outflow_create_view(request, pk):
     return render(request, template_name='outflow_create.html', context={'form': form, 'product': product})
 
 
-class OutflowListView(ListView):
+class OutflowListView(LoginRequiredMixin, ListView):
     model = Outflow
     template_name = 'outflow_list.html'
     context_object_name = 'outflows'
@@ -39,7 +42,7 @@ class OutflowListView(ListView):
             queryset = queryset.filter(product__name__icontains=search)
         return queryset
 
-class OutflowDetailView(DetailView):
+class OutflowDetailView(LoginRequiredMixin, DetailView):
     model = Outflow
     template_name = 'outflow_detail.html'
     context_object_name = 'outflow'

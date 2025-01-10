@@ -5,9 +5,11 @@ from .forms import BrandForm, BrandUpdateForm
 from django.urls import reverse_lazy
 from django.db.models import ProtectedError
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class BrandCreateView(CreateView):
+class BrandCreateView(LoginRequiredMixin, CreateView):
     model = Brand
     template_name = 'brand_create.html'
     form_class = BrandForm
@@ -19,7 +21,7 @@ class BrandCreateView(CreateView):
         return response
 
 
-class BrandListView(ListView):
+class BrandListView(LoginRequiredMixin, ListView):
     model = Brand
     template_name = 'brand_list.html'
     context_object_name = 'brands'
@@ -33,7 +35,7 @@ class BrandListView(ListView):
         return queryset
 
 
-class BrandUpdateView(UpdateView):
+class BrandUpdateView(LoginRequiredMixin, UpdateView):
     model = Brand
     template_name = 'brand_update.html'
     form_class = BrandUpdateForm
@@ -45,12 +47,12 @@ class BrandUpdateView(UpdateView):
         return response
 
 
-class BrandDetailView(DetailView):
+class BrandDetailView(LoginRequiredMixin, DetailView):
     model = Brand
     template_name = 'brand_detail.html'
     context_object_name = 'brand'
 
-
+@login_required()
 def brand_delete_view(request, pk):
     brand_object = get_object_or_404(Brand, id=pk)
     if request.method == 'POST':

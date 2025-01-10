@@ -6,8 +6,9 @@ from products.models import Product
 from django.contrib import messages
 from django.db import transaction
 from decimal import Decimal
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def sale_list_view(request):
     sales = Sale.objects.all().order_by('-created_at')  
     context = {'sales': sales}
@@ -25,6 +26,7 @@ def sale_list_view(request):
 
     return render(request, 'sale_list.html', context)
 
+@login_required
 @transaction.atomic
 def sale_cart_view(request):
     if not request.session.get('sale_id'):    
@@ -71,13 +73,14 @@ def sale_cart_view(request):
         'sale_has_items': sale_has_items,
         })
 
+@login_required
 @transaction.atomic
 def sale_finalize_view(request):
     sale = get_object_or_404(Sale, id=request.session['sale_id'])
     form = PaymentMethodForm()
     sale_payments = sale.payment_methods.all()
     total_paid = sum([payment.value for payment in sale_payments])
-    
+
     if total_paid < sale.total:
         if 'change' in request.session:
             del request.session['change']
@@ -86,7 +89,11 @@ def sale_finalize_view(request):
         form = PaymentMethodForm(request.POST)
 
         if request.POST.get("name") == "finalize":
-            messages.success(request, message=f"Venda {request.session['sale_id']} realizada com sucesso!")
+            messages.success(
+                request,
+                message=f"""Venda {request.session['sale_id']}
+                realizada com sucesso!"""
+                )
             del request.session['sale_id']
             return redirect('sale_list')
 
@@ -95,12 +102,22 @@ def sale_finalize_view(request):
             if discount_value > 0 and discount_value < sale.total:
                 sale.total -= discount_value
                 sale.save()
-                messages.success(request, f"Desconto de R$ {discount_value:.2f} atribuido à venda.")
+                messages.success(
+                    request,
+                    f"""Desconto de
+                    R$ {discount_value:.2f}
+                    atribuido à venda."""
+                    )
             else:
-                messages.error(request, "Valor do desconto deve ser maior que zero.")
+                messages.error(
+                    request,
+                    """Entrada Inválida.
+                    Valor deve ser maior que zero
+                    e menor que o total da venda.""",
+                    extra_tags="danger"
+                    )
             return redirect('sale_finalize')
-        
-        
+
         if form.is_valid():
 
             payment_method = form.save(commit=False)
@@ -110,8 +127,11 @@ def sale_finalize_view(request):
             sale_payments = sale.payment_methods.all()
             total_paid = sum([payment.value for payment in sale_payments])
 
-            if total_paid > sale.total: change = total_paid - sale.total
-            else: change = None
+            if total_paid > sale.total:
+                change = total_paid - sale.total
+            else:
+                change = None
+
             if change:
                 payment_method.value -= change
                 payment_method.save()
@@ -136,20 +156,25 @@ def sale_finalize_view(request):
 
     if sale_is_fully_paid:
         context['sale_is_fully_paid'] = sale_is_fully_paid
-    
+
     return render(request, 'sale_finalize.html', context=context)
 
 
+@login_required
 def sale_item_delete(request, pk):
     sale_item = get_object_or_404(SaleItem, id=pk)
     sale_item.delete()
     return redirect('start_sale')
 
+
+@login_required
 def payment_method_delete(request, pk):
     payment_method = get_object_or_404(PaymentMethod, id=pk)
     payment_method.delete()
     return redirect('sale_finalize')
 
+
+@login_required
 def sale_detail_view(request, pk):
     sale = get_object_or_404(Sale, id=pk)
     sale_items = sale.items.all()
@@ -160,5 +185,4 @@ def sale_detail_view(request, pk):
         'sale_items': sale_items,
         'payment_methods': payment_methods,
     }
-    
     return render(request, template_name='sale_detail.html', context=context)

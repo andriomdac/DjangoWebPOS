@@ -1,0 +1,13 @@
+[flake8]
+extend-ignore = E203, C901
+exclude =
+    .gitignore,
+    __pycache__,
+    venv,
+    app,
+    db.slite3,
+    manage.py,
+    requirements.txt,
+    migrations,
+
+max-complexity = 10

@@ -9,9 +9,11 @@ from sales.models import SaleItemReturn
 from sales.forms import SaleItemReturnForm, SaleItemForm
 from sales.models import Sale, SaleItem
 from django.db import transaction
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     template_name = 'product_create.html'
     form_class = ProductForm
@@ -22,7 +24,7 @@ class ProductCreateView(CreateView):
         messages.success(self.request, f'Produto "{self.object.name}" adicionado com sucesso!')
         return response
 
-
+@login_required
 def product_list_view(request):
     products = Product.objects.all()
     search = request.GET.get('search')
@@ -46,7 +48,7 @@ def product_list_view(request):
 
     return render(request, 'product_list.html', context)
 
-
+@login_required
 @transaction.atomic
 def product_item_add_to_sale(request, pk):
     if not request.session.get('sale_id'):
@@ -96,7 +98,7 @@ def product_item_add_to_sale(request, pk):
 
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     template_name = 'product_update.html'
     form_class = ProductUpdateForm
@@ -108,6 +110,7 @@ class ProductUpdateView(UpdateView):
         return response
 
 
+@login_required
 def product_delete_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
@@ -123,12 +126,13 @@ def product_delete_view(request, pk):
     return render(request, template_name='product_delete.html', context={'object': product})
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
 
 
+@login_required
 def product_return_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
     form = SaleItemReturnForm()
@@ -154,6 +158,7 @@ def product_return_view(request, pk):
     return render(request, template_name='product_return_form.html', context=context)
 
 
+@login_required
 def product_return_list_view(request):
     product_list = SaleItemReturn.objects.all().order_by('-created_at')
     context = {

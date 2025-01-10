@@ -5,9 +5,10 @@ from .forms import CategoryForm, CategoryUpdateForm
 from django.urls import reverse_lazy
 from django.db.models import ProtectedError
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-
-class CategoryCreateView(CreateView):
+class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     template_name = 'category_create.html'
     form_class = CategoryForm
@@ -19,7 +20,7 @@ class CategoryCreateView(CreateView):
         return response
 
 
-class CategoryListView(ListView):
+class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     template_name = 'category_list.html'
     context_object_name = 'categories'
@@ -36,7 +37,7 @@ class CategoryListView(ListView):
         return queryset
 
 
-class CategoryUpdateView(UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Category
     template_name = 'category_create.html'
     form_class = CategoryUpdateForm
@@ -47,7 +48,7 @@ class CategoryUpdateView(UpdateView):
         messages.success(self.request, f'Categoria "{self.object.name}" alterada com sucesso!')
         return response
 
-
+@login_required()
 def category_delete_view(request, pk):
     category_object = get_object_or_404(Category, id=pk)
     if request.method == 'POST':
@@ -63,7 +64,7 @@ def category_delete_view(request, pk):
     return render(request, template_name='category_delete.html', context={'object': category_object})
 
 
-class CategoryDetailView(DetailView):
+class CategoryDetailView(LoginRequiredMixin, DetailView):
     model = Category
     template_name = 'category_detail.html'
     context_object_name = 'category'
