@@ -11,6 +11,7 @@ from sales.models import Sale, SaleItem
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -49,6 +50,12 @@ def product_list_view(request):
         else:
             sale.delete()
             del request.session['sale_id']
+
+    paginator = Paginator(products, 20)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context['page_obj'] = page_obj
+    context['paginator'] = paginator
 
     return render(request, 'product_list.html', context)
 

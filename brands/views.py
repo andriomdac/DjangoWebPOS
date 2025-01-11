@@ -25,7 +25,7 @@ class BrandListView(LoginRequiredMixin, ListView):
     model = Brand
     template_name = 'brand_list.html'
     context_object_name = 'brands'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('name')

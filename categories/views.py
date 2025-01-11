@@ -28,6 +28,7 @@ class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     template_name = 'category_list.html'
     context_object_name = 'categories'
+    paginate_by = 20
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()

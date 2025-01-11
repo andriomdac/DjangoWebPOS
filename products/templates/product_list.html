@@ -6,7 +6,7 @@
         {% if messages %}
             <ul>
                 {% for message in messages %}
-                    <span class="badge bg-{{ message.tags }}">{{ message }}</span>
+                    <span class="alert alert-{{ message.tags }}">{{ message }}</span>
                 {% endfor %}
             </ul>
         {% endif %}
@@ -63,7 +63,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for product in products %}
+            {% for product in page_obj %}
             <tr>
                 <td>
                     <form method="post" class="d-flex" action="{% url 'product_item_add_to_sale' product.pk %}">
@@ -130,4 +130,7 @@
         {% endfor %}        
         </tbody>
     </table>
+
+    {% include 'components/_pagination.html' %}
+
 {% endblock %}

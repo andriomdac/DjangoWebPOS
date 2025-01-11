@@ -21,7 +21,7 @@
             {% if messages %}
                 <ul>
                     {% for message in messages %}
-                        <span class="badge bg-{{ message.tags }}">{{ message }}</span>
+                        <span class="alert alert-{{ message.tags }}">{{ message }}</span>
                     {% endfor %}
                 </ul>
             {% endif %}

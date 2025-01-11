@@ -40,6 +40,7 @@ class InflowListView(LoginRequiredMixin, ListView):
     template_name = 'inflow_list.html'
     context_object_name = 'inflows'
     ordering = ['-created_at']
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset()
