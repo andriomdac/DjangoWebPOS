@@ -55,7 +55,7 @@
             </tr>
         </thead>
         <tbody>
-    {% for sale in sales %}
+    {% for sale in page_obj %}
         <tr>
             <td>
                 {{sale.id}}
@@ -83,4 +83,7 @@
     {% endfor %}
         </tbody>
     </table>
+
+    {% include 'components/_pagination.html' %}
+
 {% endblock %}

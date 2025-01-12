@@ -11,7 +11,7 @@ from sales.models import Sale, SaleItem
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
+from app.utils import add_pagination_to_view_context
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -40,6 +40,15 @@ def product_list_view(request):
     context = {
         'products': products,
     }
+
+    add_pagination_to_view_context(
+        request,
+        object_list=products,
+        context=context,
+        per_page=20
+        )
+
+
     if 'sale_id' in request.session:
         context['sale_id'] = request.session['sale_id']
         sale = get_object_or_404(Sale, id=context['sale_id'])
@@ -50,12 +59,6 @@ def product_list_view(request):
         else:
             sale.delete()
             del request.session['sale_id']
-
-    paginator = Paginator(products, 20)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    context['page_obj'] = page_obj
-    context['paginator'] = paginator
 
     return render(request, 'product_list.html', context)
 

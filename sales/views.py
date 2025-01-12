@@ -6,12 +6,17 @@ from django.contrib import messages
 from django.db import transaction
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
+from app.utils import add_pagination_to_view_context
+
+
 
 
 @login_required
 def sale_list_view(request):
     sales = Sale.objects.all().order_by('-created_at')
     context = {'sales': sales}
+
+    add_pagination_to_view_context(request, object_list=sales, context=context)
 
     if 'sale_id' in request.session:
         sale = get_object_or_404(Sale, id=request.session['sale_id'])
