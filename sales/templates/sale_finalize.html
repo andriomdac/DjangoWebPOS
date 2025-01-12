@@ -18,13 +18,8 @@
             {% endif %}
 
             <!-- Display Messages -->
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <span class="alert alert-{{ message.tags }}">{{ message }}</span>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+            {% include 'components/_messages.html' %}
+
 
             <!-- Finalize Sale Button -->
             {% if sale_is_fully_paid %}

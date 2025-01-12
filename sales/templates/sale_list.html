@@ -13,13 +13,8 @@
 
         </div>
         <div class="col-md-6 d-flex justify-content-end">
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+            {% include 'components/_messages.html' %}
+
         
             {% if active_sale %}
                 <a href="{% url 'start_sale' %}" type="button" class="btn btn-warning d-flex align-items-center justify-content-center">

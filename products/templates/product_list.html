@@ -3,13 +3,8 @@
 {% block content %}
 <br>
     <div class="row">
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <span class="alert alert-{{ message.tags }}">{{ message }}</span>
-                {% endfor %}
-            </ul>
-        {% endif %}<br><br>
+
+        {% include 'components/_messages.html' %}
     
         <div class="col-md-6">
             <form method="get">

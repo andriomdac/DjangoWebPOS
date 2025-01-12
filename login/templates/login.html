@@ -1,18 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+<div class="d-flex justify-content-center align-items-center vh-100 bg-auto">
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
         <h3 class="text-center mb-4">Login</h3>
-        {% if messages %}
-            <div class="mb-3">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} text-center" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'components/_messages.html' %}
+
         <form method="post">
             {% csrf_token %}
             <div class="mb-3">

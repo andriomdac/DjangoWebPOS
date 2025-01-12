@@ -6,13 +6,8 @@
     <div class="row">
         <div class="col-md-6">
             <h4>Adicionar Produto</h4>
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <div class="alert alert-{{message.tags}}">{{ message }}</div>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+            {% include 'components/_messages.html' %}
+
             {% if form.errors %}
                 {% for field in form %}
                     {% for error in field.errors %}

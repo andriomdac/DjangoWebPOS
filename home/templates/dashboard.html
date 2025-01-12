@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Painel de Controle{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-12 text-center mb-4">
-            <h1 class="display-4">Painel de Controle</h1>
+            <img src="{% static 'images/JL/JOAN_SUPLEMENTOS.png' %}" alt="JOAN SUPLEMENTOS">
 
             <div class="row mt-4">
                 <div class="col-12">
-                    <form method="GET" action="{% url 'dashboard' %}" class="justify-content-center p-4 shadow-sm bg-light rounded">
+                    <form method="GET" action="{% url 'dashboard' %}" class="justify-content-center p-4 shadow-sm bg-auto rounded">
                         <div class="input-group input-group-lg">
                             <input 
                                 type="date" 

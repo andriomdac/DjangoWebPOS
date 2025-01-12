@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="light">
+<html lang="en" data-bs-theme="dark">
   <head>
     {% load static %}
     <meta charset="utf-8">
@@ -15,8 +15,13 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-2">
+          <img src="{% static 'images/JL/JL.png' %}" alt="JL">
+
           {% if user.is_authenticated %}
             {% include "components/_sidebar.html" %}
+            <a href="{% url 'logout' %}">
+              <button type="button" class="btn btn-warning">Logout</button>
+            </a>
           {% endif %}
         </div>
         <div class="col-sm-10">
