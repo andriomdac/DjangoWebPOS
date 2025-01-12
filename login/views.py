@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from app.utils import delete_sale_with_no_items
 
 
 def login_view(request):
@@ -22,6 +23,9 @@ def login_view(request):
 
 
 def logout_view(request):
+    
+    delete_sale_with_no_items(request=request)
+
     if 'sale_id' in request.session:
         messages.error(
             request,
