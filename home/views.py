@@ -3,7 +3,7 @@ from sales.models import Sale, SaleItemReturn, SaleItem
 from datetime import date, datetime
 from django.db.models import Sum, F
 from products.models import Product
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 
 @login_required()

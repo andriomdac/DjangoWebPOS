@@ -5,11 +5,12 @@ from .forms import InflowCreateForm
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
 @login_required
+@permission_required(['inflows.add_inflow'])
 @transaction.atomic
 def inflow_create_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -35,12 +36,13 @@ def inflow_create_view(request, pk):
             })
 
 
-class InflowListView(LoginRequiredMixin, ListView):
+class InflowListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Inflow
     template_name = 'inflow_list.html'
     context_object_name = 'inflows'
     ordering = ['-created_at']
     paginate_by = 20
+    permission_required = 'inflows.view_inflow'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -50,7 +52,8 @@ class InflowListView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class InflowDetailView(LoginRequiredMixin, DetailView):
+class InflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Inflow
     template_name = 'inflow_detail.html'
     context_object_name = 'inflow'
+    permission_required = 'inflows.view_inflow'

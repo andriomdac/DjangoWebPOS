@@ -5,15 +5,16 @@ from .forms import CategoryForm, CategoryUpdateForm
 from django.urls import reverse_lazy
 from django.db.models import ProtectedError
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
-class CategoryCreateView(LoginRequiredMixin, CreateView):
+class CategoryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Category
     template_name = 'category_create.html'
     form_class = CategoryForm
     success_url = reverse_lazy('category_list')
+    permission_required = 'add_category'
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -24,11 +25,13 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
         return response
 
 
-class CategoryListView(LoginRequiredMixin, ListView):
+class CategoryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Category
     template_name = 'category_list.html'
     context_object_name = 'categories'
     paginate_by = 20
+    permission_required = 'categories.view_category'
+
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()
@@ -42,11 +45,13 @@ class CategoryListView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class CategoryUpdateView(LoginRequiredMixin, UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Category
     template_name = 'category_create.html'
     form_class = CategoryUpdateForm
     success_url = reverse_lazy('category_list')
+    permission_required = 'categories.change_category'
+
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -58,6 +63,7 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
 
 
 @login_required()
+@permission_required(['categories.delete_category'])
 def category_delete_view(request, pk):
     category_object = get_object_or_404(Category, id=pk)
     if request.method == 'POST':
@@ -79,7 +85,9 @@ def category_delete_view(request, pk):
             })
 
 
-class CategoryDetailView(LoginRequiredMixin, DetailView):
+class CategoryDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Category
     template_name = 'category_detail.html'
     context_object_name = 'category'
+    permission_required = 'categories.view_category'
+

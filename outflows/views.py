@@ -5,11 +5,12 @@ from .forms import OutflowCreateForm
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
 @login_required
+@permission_required(['outflows.add_outflow'])
 @transaction.atomic
 def outflow_create_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -41,12 +42,13 @@ def outflow_create_view(request, pk):
             })
 
 
-class OutflowListView(LoginRequiredMixin, ListView):
+class OutflowListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Outflow
     template_name = 'outflow_list.html'
     context_object_name = 'outflows'
     ordering = ['-created_at']
     paginate_by = 20
+    permission_required = 'outflows.view_outflow'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -56,7 +58,8 @@ class OutflowListView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class OutflowDetailView(LoginRequiredMixin, DetailView):
+class OutflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Outflow
     template_name = 'outflow_detail.html'
     context_object_name = 'outflow'
+    permission_required = 'outflows.view_outflow'

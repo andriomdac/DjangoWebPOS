@@ -20,6 +20,7 @@
           {% if user.is_authenticated %}
             {% include "components/_sidebar.html" %}
             <a href="{% url 'logout' %}">
+              <p>{{request.user}}</p>
               <button type="button" class="btn btn-warning">Logout</button>
             </a>
           {% endif %}

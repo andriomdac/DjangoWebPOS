@@ -7,7 +7,7 @@ class InflowCreateForm(forms.ModelForm):
         model = Inflow
         fields = ["quantity",]
         widgets = {
-            'quantity': forms.NumberInput(attrs={'class': 'form-control'})
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'autofocus': ''})
         }
 
     def clean_quantity(self):

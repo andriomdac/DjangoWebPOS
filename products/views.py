@@ -9,16 +9,17 @@ from sales.models import SaleItemReturn
 from sales.forms import SaleItemReturnForm
 from sales.models import Sale, SaleItem
 from django.db import transaction
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from app.utils import add_pagination_to_view_context
 
 
-class ProductCreateView(LoginRequiredMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Product
     template_name = 'product_create.html'
     form_class = ProductForm
     success_url = reverse_lazy('product_list')
+    permission_required = 'products.add_product'
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -30,6 +31,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
 
 @login_required
+@permission_required(['products.view_product'])
 def product_list_view(request):
     products = Product.objects.all()
     search = request.GET.get('search')
@@ -64,6 +66,7 @@ def product_list_view(request):
 
 
 @login_required
+@permission_required(['sales.add_sale'])
 @transaction.atomic
 def product_item_add_to_sale(request, pk):
     if not request.session.get('sale_id'):
@@ -113,11 +116,12 @@ def product_item_add_to_sale(request, pk):
         return redirect('product_list')
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Product
     template_name = 'product_update.html'
     form_class = ProductUpdateForm
     success_url = reverse_lazy('product_list')
+    permission_required = 'products.change_product'
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -126,6 +130,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
 
 
 @login_required
+@permission_required(['products.delete_product'])
 def product_delete_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
@@ -142,13 +147,15 @@ def product_delete_view(request, pk):
     return render(request, template_name='product_delete.html', context={'object': product})
 
 
-class ProductDetailView(LoginRequiredMixin, DetailView):
+class ProductDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
+    permission_required = 'products.view_product'
 
 
 @login_required
+@permission_required(['sales.add_sale'])
 def product_return_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
     form = SaleItemReturnForm()
@@ -175,6 +182,7 @@ def product_return_view(request, pk):
 
 
 @login_required
+@permission_required(['sales.add_sale'])
 def product_return_list_view(request):
     product_list = SaleItemReturn.objects.all().order_by('-created_at')
     context = {
