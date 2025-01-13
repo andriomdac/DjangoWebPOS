@@ -9,8 +9,6 @@ from django.contrib.auth.decorators import login_required
 from app.utils import add_pagination_to_view_context
 
 
-
-
 @login_required
 def sale_list_view(request):
     sales = Sale.objects.all().order_by('-created_at')

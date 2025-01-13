@@ -50,7 +50,6 @@ def product_list_view(request):
         per_page=20
         )
 
-
     if 'sale_id' in request.session:
         context['sale_id'] = request.session['sale_id']
         sale = get_object_or_404(Sale, id=context['sale_id'])

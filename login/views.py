@@ -23,7 +23,7 @@ def login_view(request):
 
 
 def logout_view(request):
-    
+
     delete_sale_with_no_items(request=request)
 
     if 'sale_id' in request.session:

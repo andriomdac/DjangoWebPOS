@@ -15,6 +15,7 @@ def add_pagination_to_view_context(
     context['page_obj'] = page_obj
     context['paginator'] = paginator
 
+
 def delete_sale_with_no_items(request):
     from sales.models import Sale
     from django.shortcuts import get_object_or_404

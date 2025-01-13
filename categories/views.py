@@ -32,7 +32,6 @@ class CategoryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     paginate_by = 20
     permission_required = 'categories.view_category'
 
-
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()
         return context
@@ -51,7 +50,6 @@ class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
     form_class = CategoryUpdateForm
     success_url = reverse_lazy('category_list')
     permission_required = 'categories.change_category'
-
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -90,4 +88,3 @@ class CategoryDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView
     template_name = 'category_detail.html'
     context_object_name = 'category'
     permission_required = 'categories.view_category'
-

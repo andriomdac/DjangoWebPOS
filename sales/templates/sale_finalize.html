@@ -25,7 +25,7 @@
             {% if sale_is_fully_paid %}
                 <form method="post">
                     {% csrf_token %}
-                    <button type="submit" name="name" value="finalize" class="btn btn-success btn-lg w-100">Finalizar Venda</button>
+                    <button type="submit" name="name" value="finalize" autofocus="" class="btn btn-success btn-lg w-100">Finalizar Venda</button>
                 </form>
             {% else %}
             <!-- Add Payment Form -->
@@ -50,7 +50,7 @@
                 <form method="post" class="d-flex">
                     {% csrf_token %}
                     <div class="input-group">
-                        <button type="submit" name="name" value="discount" class="btn btn-dark">
+                        <button type="submit" name="name" value="discount" class="btn btn-secondary">
                             <i class="bi bi-cash"></i>
                         </button>
                         <input type="number" name="value" class="form-control" placeholder="Desconto" min="1" required>

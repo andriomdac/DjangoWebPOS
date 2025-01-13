@@ -24,6 +24,7 @@ def format_href_for_static(file_name):
 
     print("All href paths updated to use {% static %}.")
 
+
 def format_src_for_static(file_name):
     from bs4 import BeautifulSoup
     from os import path
@@ -51,5 +52,6 @@ def format_src_for_static(file_name):
         file.write(str(soup))
 
     print("All src paths updated to use {% static %}.")
+
 
 format_src_for_static(file_name='what-we.html')

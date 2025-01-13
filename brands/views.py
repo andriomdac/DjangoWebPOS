@@ -16,7 +16,6 @@ class BrandCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     success_url = reverse_lazy('brand_list')
     permission_required = 'brands.add_brand'
 
-
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, f'Marca "{self.object.name}" criada com sucesso!')
@@ -29,7 +28,6 @@ class BrandListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     context_object_name = 'brands'
     paginate_by = 20
     permission_required = 'brands.view_brand'
-
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('name')
@@ -45,7 +43,6 @@ class BrandUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = BrandUpdateForm
     success_url = reverse_lazy('brand_list')
     permission_required = 'brands.change_brand'
-
 
     def form_valid(self, form):
         response = super().form_valid(form)
