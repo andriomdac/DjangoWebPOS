@@ -12,22 +12,33 @@
 
   <body>
 
+
+    
+    
+    {% include 'components/_header.html' %}
+
     <div class="container-fluid">
       <div class="row">
+        {% if user.is_authenticated %}
         <div class="col-sm-2">
           <img src="{% static 'images/JL/JL.png' %}" alt="JL">
-
-          {% if user.is_authenticated %}
             {% include "components/_sidebar.html" %}
+            {% if user.is_authenticated %}
             <a href="{% url 'logout' %}">
-              <p>{{request.user}}</p>
-              <button type="button" class="btn btn-warning">Logout</button>
+              <button type="button" class="btn btn-primary"><i class="bi bi-box-arrow-right me-2"></i>Sair | {{request.user}}</button>
             </a>
-          {% endif %}
+            {% endif %}
         </div>
         <div class="col-sm-10">
           {% block content %}{% endblock %}
         </div>
+        {% else %}
+        <div class="col-sm-12">
+          {% block login %}{% endblock %}
+        </div>
+        {% endif %}
+
+
       </div>
     </div>
 

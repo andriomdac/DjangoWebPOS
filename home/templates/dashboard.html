@@ -6,8 +6,6 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12 text-center mb-4">
-            <img src="{% static 'images/JL/JOAN_SUPLEMENTOS.png' %}" alt="JOAN SUPLEMENTOS">
-
             <div class="row mt-4">
                 <div class="col-12">
                     <form method="GET" action="{% url 'dashboard' %}" class="justify-content-center p-4 shadow-sm bg-auto rounded">
@@ -29,7 +27,6 @@
                 </div>
             </div><br>
             
-
             <h4 class="text-muted">{{ query_date }}</h4>
 
         </div>
@@ -43,7 +40,8 @@
                     <h5>Total de Vendas</h5>
                 </div>
                 <div class="card-body">
-                    <h2 class="text-primary">R$ {{ sales_total_value|floatformat:2 }}</h2>
+                    <h2 class="text-primary toggle-value">R$ {{ sales_total_value|floatformat:2 }}</h2>
+                    <button class="btn btn-sm btn-outline-primary toggle-btn"></button>
                 </div>
             </div>
         </div>
@@ -55,7 +53,8 @@
                     <h5>Número de Vendas Hoje</h5>
                 </div>
                 <div class="card-body">
-                    <h2 class="text-success">{{ num_sales_today }}</h2>
+                    <h2 class="text-success toggle-value">{{ num_sales_today }}</h2>
+                    <button class="btn btn-sm btn-outline-success toggle-btn"></i></button>
                 </div>
             </div>
         </div>
@@ -67,7 +66,8 @@
                     <h5>Itens Vendidos Hoje</h5>
                 </div>
                 <div class="card-body">
-                    <h2 class="text-info">{{ num_items_sold_today }}</h2>
+                    <h2 class="text-info toggle-value">{{ num_items_sold_today }}</h2>
+                    <button class="btn btn-sm btn-outline-info toggle-btn"></i></button>
                 </div>
             </div>
         </div>
@@ -81,7 +81,8 @@
                     <h5>Valor de Devoluções</h5>
                 </div>
                 <div class="card-body">
-                    <h2 class="text-danger">R$ {{ returns_total_value|floatformat:2 }}</h2>
+                    <h2 class="text-danger toggle-value">R$ {{ returns_total_value|floatformat:2 }}</h2>
+                    <button class="btn btn-sm btn-outline-danger toggle-btn"></i></button>
                 </div>
             </div>
         </div>
@@ -93,7 +94,8 @@
                     <h5>Lucro Hoje</h5>
                 </div>
                 <div class="card-body">
-                    <h2 class="text-warning">R$ {{ profit_today|floatformat:2 }}</h2>
+                    <h2 class="text-warning toggle-value">R$ {{ profit_today|floatformat:2 }}</h2>
+                    <button class="btn btn-sm btn-outline-warning toggle-btn"></button>
                 </div>
             </div>
         </div>
@@ -108,8 +110,9 @@
                 </div>
                 <div class="card-body">
                     {% if top_selling_product %}
-                        <h4>{{ top_selling_product.product__name }}</h4>
-                        <p>Quantidade: {{ top_selling_product.total_quantity }}</p>
+                        <h4 class="toggle-value">{{ top_selling_product.product__name }}</h4>
+                        <p class="toggle-value">Quantidade: {{ top_selling_product.total_quantity }}</p>
+                        <button class="btn btn-sm btn-outline-dark toggle-btn"></i></button>
                     {% else %}
                         <p class="text-muted">Sem dados de vendas disponíveis para hoje</p>
                     {% endif %}
@@ -126,7 +129,8 @@
                     <h5>Valor Total do Estoque</h5>
                 </div>
                 <div class="card-body">
-                    <h2 class="text-secondary">R$ {{ total_stock_value|floatformat:2 }}</h2>
+                    <h2 class="text-secondary toggle-value">R$ {{ total_stock_value|floatformat:2 }}</h2>
+                    <button class="btn btn-sm btn-outline-secondary toggle-btn"></i></button>
                 </div>
             </div>
         </div>
@@ -138,10 +142,29 @@
                     <h5>Lucro Total do Estoque</h5>
                 </div>
                 <div class="card-body">
-                    <h2 class="text-secondary">R$ {{ total_stock_profit }}</h2>
+                    <h2 class="text-secondary toggle-value">R$ {{ total_stock_profit }}</h2>
+                    <button class="btn btn-sm btn-outline-secondary toggle-btn"></button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.toggle-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const valueElement = this.previousElementSibling;
+                if (valueElement.style.display === 'none') {
+                    valueElement.style.display = '';
+                    this.innerHTML = ''; // Icon when showing the value
+                } else {
+                    valueElement.style.display = 'none';
+                    this.innerHTML = ''; // Icon when hiding the value
+                }
+            });
+        });
+    });
+    </script>
+    
 {% endblock %}

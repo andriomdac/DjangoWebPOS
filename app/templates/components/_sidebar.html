@@ -1,11 +1,14 @@
 <br>
-    <ul class="nav nav-pills flex-column mb-auto">
+    <ul class="nav nav-pills flex-column mb-5">
+
+        {% if perms.brands.delete_brand %}
         <li>
           <a href="{% url 'dashboard' %}" class="nav-link link-body-emphasis">
             <i class="bi bi-bar-chart-line-fill me-2"></i>
             Painel
           </a>
         </li>
+        {% endif %}
         <li>
           <a href="{% url 'sale_list' %}" class="nav-link link-body-emphasis">
             <i class="bi bi-cart2 me-2"></i>
@@ -29,18 +32,22 @@
             <i class="bi bi-box-seam me-2"></i> Produtos
           </a>
         </li>
+        {% if perms.inflows.add_inflow %}
         <li>
           <a href="{% url 'inflow_list' %}" class="nav-link link-body-emphasis">
             <i class="bi bi-box-arrow-up me-2"></i>
             Entradas
           </a>
         </li>
+        {% endif %}
+        {% if perms.outflows.add_outflow %}
         <li>
           <a href="{% url 'outflow_list' %}" class="nav-link link-body-emphasis">
             <i class="bi bi-box-arrow-down me-2"></i>
             Saídas
           </a>
         </li>
+        {% endif %}
         <li>
           <a href="{% url 'product_return_list' %}" class="nav-link link-body-emphasis">
             <i class="bi bi-bag-x me-2"></i>

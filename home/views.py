@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from sales.models import Sale, SaleItemReturn, SaleItem
 from datetime import date, datetime
 from django.db.models import Sum, F
@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 @login_required()
 def dashboard_view(request):
+    if not request.user.has_perm('brands.delete_brand'):
+        return redirect('product_list')
     # Get query_date from request, default to today
     query_date_str = request.GET.get('query_date')  # Adjusted to match the GET method
     try:

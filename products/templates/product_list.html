@@ -22,9 +22,11 @@
             {% endif %}
         </div>
         <div class="col-md-3 d-flex justify-content-end">
+            {% if perms.products.create_product %}
             <a href="{% url 'product_create' %}">
                 <button type="button" class="btn btn-success"><i class="bi bi-plus-circle"></i> Novo(a)</button>
             </a>
+            {% endif %}
         </div>
     </div><br>
 
@@ -43,9 +45,11 @@
                 <th>
                     Marca
                 </th>
+                {% if perms.products.add_product %}
                 <th>
                     Preço de Custo
                 </th>
+                {% endif %}
                 <th>
                     Preço de Venda
                 </th>
@@ -74,7 +78,9 @@
                 <td>{{ product.id }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.brand }}</td>
+                {% if perms.products.add_product %}
                 <td>R$ {{ product.cost_price }}</td>
+                {% endif %}
                 <td>R$ {{ product.selling_price }}</td>
                 <td>{{ product.quantity }}</td>
                 <td>
@@ -88,36 +94,44 @@
                             Opções
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ product.id }}">
+                            {% if perms.inflows.add_inflow %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'inflow_create' product.pk %}">
                                     <i class="bi bi-box-arrow-up me-2"></i>Registrar Entrada
                                 </a>
                             </li>
+                            {% endif %}
+                            {% if perms.outflows.add_outflow %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'outflow_create' product.pk %}">
                                     <i class="bi bi-box-arrow-down me-2"></i>Registrar Saída
                                 </a>
                             </li>
+                            {% endif %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'product_detail' product.pk %}">
                                     <i class="bi bi-eye-fill me-2"></i>Ver Detalhes
                                 </a>
                             </li>
+                            {% if perms.products.change_product %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'product_update' product.pk %}">
                                     <i class="bi bi-pencil-square me-2"></i>Editar Produto
                                 </a>
                             </li>
+                            {% endif %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'product_return' product.pk %}">
                                     <i class="bi bi-bag-x me-2"></i>Devolução
                                 </a>
                             </li>
+                            {% if perms.products.delete_product %}
                             <li>
                                 <a class="dropdown-item text-danger" href="{% url 'product_delete' product.pk %}">
                                     <i class="bi bi-trash-fill me-2"></i>Excluir Produto
                                 </a>
                             </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </td>
