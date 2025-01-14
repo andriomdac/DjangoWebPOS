@@ -1,9 +1,8 @@
 {% load static %}
 
-<div class="container">
-    <header class="d-flex justify-content-between align-items-center py-3">
+    <header class="d-flex justify-content-between align-items-center py-3 bg-dark">
+      <a href="{% url 'toggle_theme' %}" class="btn btn-{{request.session.theme}}"><i class="bi bi-toggle-{{request.session.toggle}}"></i></a>
       <div class="d-flex flex-grow-1 justify-content-center">
         <img src="{% static 'images/JL/JOAN_SUPLEMENTOS.png' %}" alt="JOAN SUPLEMENTOS">
       </div>
     </header>
-  </div>

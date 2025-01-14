@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="{{request.session.theme}}">
   <head>
     {% load static %}
     <meta charset="utf-8">
@@ -11,6 +11,7 @@
   </head>
 
   <body>
+
 
 
     
@@ -78,7 +79,7 @@
 
     <footer class="py-3 my-4 px-0">
       <p class="text-center text-muted">
-        © 2024 Joan Suplementos
+        © 2024 Joan Suplementos<br>
       </p>
     </footer>
   </body>

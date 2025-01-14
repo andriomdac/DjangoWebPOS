@@ -5,6 +5,9 @@ from app.utils import delete_sale_with_no_items
 
 
 def login_view(request):
+    
+    request.session['theme'] = "light"
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')

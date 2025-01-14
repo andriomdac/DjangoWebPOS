@@ -12,9 +12,5 @@ urlpatterns = [
     path('delete/<int:pk>/', product_delete_view, name='product_delete'),
     path('return/<int:pk>/', product_return_view, name='product_return'),
     path('return_list/', product_return_list_view, name='product_return_list'),
-    path(
-        'product_item_add_to_sale/<int:pk>/',
-        product_item_add_to_sale,
-        name='product_item_add_to_sale'
-        )
+    path('product_item_add_to_sale/<int:pk>/', product_item_add_to_sale, name='product_item_add_to_sale')
 ]
