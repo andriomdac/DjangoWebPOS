@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from app.utils import delete_sale_with_no_items
+from app.utils import toggle_theme
 
 
 def login_view(request):
-    
-    request.session['theme'] = "light"
+
+    if 'theme' not in request.session:
+        request.session['theme'] = 'light'
+        request.session['toggle'] = 'on'
 
     if request.method == 'POST':
         username = request.POST.get('username')

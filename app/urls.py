@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import toggle_theme
+from .utils import toggle_theme
 
 urlpatterns = [
     path('admin/', admin.site.urls),

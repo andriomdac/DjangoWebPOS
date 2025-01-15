@@ -1,3 +1,16 @@
+def toggle_theme(request):
+    from django.shortcuts import redirect
+
+
+    if 'light' in request.session['theme']:
+        request.session['theme'] = 'dark'
+        request.session['toggle'] = 'off'
+    else:
+        request.session['theme'] = 'light'
+        request.session['toggle'] = 'on'
+
+    return redirect('dashboard')
+
 
 def add_pagination_to_view_context(
     request,
@@ -5,8 +18,8 @@ def add_pagination_to_view_context(
     context,
     per_page=10
     ):
-    
     from django.core.paginator import Paginator
+
 
     paginator = Paginator(object_list, per_page)
     page_number = request.GET.get("page")
@@ -24,4 +37,3 @@ def delete_sale_with_no_items(request):
         if sale.items.all().count() == 0:
             sale.delete()
             del request.session['sale_id']
-        
