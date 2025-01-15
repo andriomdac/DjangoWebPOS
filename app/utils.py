@@ -1,5 +1,3 @@
-from icecream import ic
-
 def toggle_theme(request):
     from django.shortcuts import redirect
 
@@ -17,8 +15,6 @@ def toggle_theme(request):
 def toggle_sidebar(request):
     from django.shortcuts import redirect
 
-    for item in request.headers.items():
-        ic(item)
 
     if 'sidebar' in request.session:
         del request.session['sidebar']
@@ -48,6 +44,8 @@ def add_pagination_to_view_context(
 def delete_sale_with_no_items(request):
     from sales.models import Sale
     from django.shortcuts import get_object_or_404
+
+
     if 'sale_id' in request.session:
         sale = get_object_or_404(Sale, id=request.session['sale_id'])
         if sale.items.all().count() == 0:

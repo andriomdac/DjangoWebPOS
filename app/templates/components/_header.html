@@ -7,6 +7,9 @@
             <i class="bi bi-layout-sidebar-inset"></i>
           </button>
         </a>
+        <a href="{% url 'toggle_theme' %}" class="btn btn-{{ request.session.theme }}">
+          <i class="bi bi-toggle-{{ request.session.toggle }}"></i>
+        </a>
       </div>
       <div class="col sm-8">
         <div class="d-flex flex-grow-1 justify-content-center">

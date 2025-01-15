@@ -1,69 +1,67 @@
-<br>
-    <ul class="nav nav-pills flex-column mb-5">
+<div class="sidebar">
+  <ul class="nav nav-pills flex-column mb-4">
 
-        {% if perms.brands.delete_brand %}
-        <li>
-          <a href="{% url 'dashboard' %}" class="nav-link link-body-emphasis">
-            <i class="bi bi-bar-chart-line-fill me-2"></i>
-            Painel
-          </a>
-        </li>
-        {% endif %}
-        <li>
-          <a href="{% url 'sale_list' %}" class="nav-link link-body-emphasis">
-            <i class="bi bi-cart2 me-2"></i>
-            Vendas
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'brand_list' %}" class="nav-link link-body-emphasis">
-            <i class="bi bi-patch-check me-2"></i>
-            Marcas
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'category_list' %}" class="nav-link link-body-emphasis">
-            <i class="bi bi-bookmarks me-2"></i>
-            Categorias
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'product_list' %}" class="nav-link link-body-emphasis">
-            <i class="bi bi-box-seam me-2"></i> Produtos
-          </a>
-        </li>
-        {% if perms.inflows.add_inflow %}
-        <li>
-          <a href="{% url 'inflow_list' %}" class="nav-link link-body-emphasis">
-            <i class="bi bi-box-arrow-up me-2"></i>
-            Entradas
-          </a>
-        </li>
-        {% endif %}
-        {% if perms.outflows.add_outflow %}
-        <li>
-          <a href="{% url 'outflow_list' %}" class="nav-link link-body-emphasis">
-            <i class="bi bi-box-arrow-down me-2"></i>
-            Saídas
-          </a>
-        </li>
-        {% endif %}
-        <li>
-          <a href="{% url 'product_return_list' %}" class="nav-link link-body-emphasis">
-            <i class="bi bi-bag-x me-2"></i>
-            Devoluções
-          </a>
-        </li>
-
-        
-
-      </ul>
-      {% if user.is_authenticated %}
-      <a href="{% url 'logout' %}">
-        <button type="button" class="btn btn-{{request.session.theme}}"><i class="bi bi-box-arrow-right me-2"></i>Sair</button>
+    {% if perms.brands.delete_brand %}
+    <li class="nav-item">
+      <a href="{% url 'dashboard' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-bar-chart-line-fill me-2"></i> Painel
       </a>
-      {% endif %}
-      <br>
-      <a href="{% url 'toggle_theme' %}" class="btn btn-{{request.session.theme}}"><i class="bi bi-toggle-{{request.session.toggle}}"></i></a>
+    </li>
+    {% endif %}
 
-<br>
+    <li class="nav-item">
+      <a href="{% url 'sale_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-cart2 me-2"></i> Vendas
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a href="{% url 'brand_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-patch-check me-2"></i> Marcas
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a href="{% url 'category_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-bookmarks me-2"></i> Categorias
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a href="{% url 'product_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-box-seam me-2"></i> Produtos
+      </a>
+    </li>
+
+    {% if perms.inflows.add_inflow %}
+    <li class="nav-item">
+      <a href="{% url 'inflow_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-box-arrow-up me-2"></i> Entradas
+      </a>
+    </li>
+    {% endif %}
+
+    {% if perms.outflows.add_outflow %}
+    <li class="nav-item">
+      <a href="{% url 'outflow_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-box-arrow-down me-2"></i> Saídas
+      </a>
+    </li>
+    {% endif %}
+
+    <li class="nav-item">
+      <a href="{% url 'product_return_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-bag-x me-2"></i> Devoluções
+      </a>
+    </li>
+
+  </ul>
+
+  {% if user.is_authenticated %}
+  <div class="d-flex flex-column align-items-start">
+    <a href="{% url 'logout' %}" class="btn btn-{{ request.session.theme }} mb-2">
+      {{request.user}}<br><i class="bi bi-box-arrow-right"></i> Sair
+    </a>
+  </div>
+  {% endif %}
+</div>
