@@ -1,3 +1,3 @@
-![DJANGOWEBPOS](https://github.com/user-attachments/assets/4937fdcc-83ce-480e-8b44-1f075b3ca2b9)
+![image](https://github.com/user-attachments/assets/f4148bbd-95bb-4288-9f7f-5a7d169ab4e4)
 
-![Screenshot_2025-01-12_18-51-08](https://github.com/user-attachments/assets/322bc90e-beff-40dd-aab8-54a383072622)
+![image](https://github.com/user-attachments/assets/5fdeea0f-4a54-401f-b190-7af94a56fb33)
