@@ -4,18 +4,9 @@
 <br>
     <div class="row">
         <div class="col-md-6">
-            <form method="get">
-            <div class="input-group mb-3">
-                    <input type="text" class="form-control" name="search" placeholder="Buscar">
-                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
-            </div>
-        </form>
-
         </div>
         <div class="col-md-6 d-flex justify-content-end">
-            {% include 'components/_messages.html' %}
-
-        
+            {% include 'components/_messages.html' %} 
             {% if active_sale %}
                 <a href="{% url 'start_sale' %}" type="button" class="btn btn-warning d-flex align-items-center justify-content-center">
                     <i class="bi bi-plus-circle me-2"></i> Continuar com a Venda

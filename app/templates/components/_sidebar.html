@@ -58,4 +58,12 @@
         
 
       </ul>
+      {% if user.is_authenticated %}
+      <a href="{% url 'logout' %}">
+        <button type="button" class="btn btn-{{request.session.theme}}"><i class="bi bi-box-arrow-right me-2"></i>Sair</button>
+      </a>
+      {% endif %}
+      <br>
+      <a href="{% url 'toggle_theme' %}" class="btn btn-{{request.session.theme}}"><i class="bi bi-toggle-{{request.session.toggle}}"></i></a>
+
 <br>

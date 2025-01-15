@@ -1,3 +1,5 @@
+from icecream import ic
+
 def toggle_theme(request):
     from django.shortcuts import redirect
 
@@ -9,7 +11,21 @@ def toggle_theme(request):
         request.session['theme'] = 'light'
         request.session['toggle'] = 'on'
 
-    return redirect('dashboard')
+    return redirect(request.headers['referer'])
+
+
+def toggle_sidebar(request):
+    from django.shortcuts import redirect
+
+    for item in request.headers.items():
+        ic(item)
+
+    if 'sidebar' in request.session:
+        del request.session['sidebar']
+    else:
+        request.session['sidebar'] = 'active'
+    
+    return redirect(request.headers['referer'])
 
 
 def add_pagination_to_view_context(

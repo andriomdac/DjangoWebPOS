@@ -11,6 +11,9 @@ def login_view(request):
         request.session['theme'] = 'light'
         request.session['toggle'] = 'on'
 
+    if 'sidebar' not in request.session:
+        request.session['sidebar'] = 'on'
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
