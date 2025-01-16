@@ -47,6 +47,7 @@
                     <h5>Total da Venda:</h5>
                     <span class="badge text-bg-info fs-5 px-3 py-2">R$ {{ sale.total }}</span>
                 </div>
+                {% if not sale_is_fully_paid %}
                 <form method="post" class="d-flex">
                     {% csrf_token %}
                     <div class="input-group">
@@ -56,6 +57,7 @@
                         <input type="number" name="value" class="form-control" placeholder="Desconto" min="1" required>
                     </div>
                 </form><br>
+                {% endif %}
 
                 <!-- Payment Breakdown -->
                 <div class="border rounded p-3 mb-3">
