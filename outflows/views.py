@@ -24,7 +24,7 @@ def outflow_create_view(request, pk):
                 messages.error(
                     request,
                     f'''Erro: Estoque insuficiente para essa saída.
-                    Estoque: {product.quantity}', extra_tags='danger''')
+                    Estoque: {product.quantity}''', extra_tags='danger')
                 return redirect('outflow_create', pk=pk)
             outflow.save()
             messages.success(
