@@ -32,21 +32,17 @@
       {% if not request.session.sidebar %}
       <div class="row">
         <div class="d-flex justify-content-center align-items-center py-3 bg-dark">
-          <a href="{% url 'sale_list' %}" class="mx-2">
-            <button class="btn btn-success">
-              <i class="bi bi-cart2 me-2"></i>Vendas
-            </button>
-          </a>
-          <a href="{% url 'dashboard' %}" class="mx-2">
-            <button class="btn btn-light">
-              <i class="bi bi-bar-chart-line-fill me-2"></i>Painel
-            </button>
-          </a>
-          <a href="{% url 'product_list' %}" class="mx-2">
-            <button class="btn btn-warning">
-              <i class="bi bi-box-seam me-2"></i>Produtos
-            </button>
-          </a>
+          <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
+              <a type="button" href="{% url 'sale_list' %}" class="btn btn-outline-success">
+                <i class="bi bi-cart2 me-2"></i>Vendas
+              </a>
+              <a type="button" href="{% url 'dashboard' %}" class="btn btn-outline-light">
+                <i class="bi bi-bar-chart-line-fill me-2"></i>Painel
+              </a>
+              <a type="button" href="{% url 'product_list' %}" class="btn btn-outline-warning">
+                <i class="bi bi-box-seam me-2"></i>Produtos
+              </a>
+          </div>
         </div>
       </div>
       {% endif %}
