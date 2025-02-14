@@ -37,8 +37,13 @@ def product_list_view(request):
     search = request.GET.get('search')
 
     if search:
-        products = products.filter(name__icontains=search)
-
+        try:
+            search = int(search)
+            products = products.filter(barcode__contains=search)
+        except TypeError:
+            products = products.filter(name__contains=search)
+        except ValueError:
+            products = products.filter(name__contains=search)
     context = {
         'products': products,
     }
