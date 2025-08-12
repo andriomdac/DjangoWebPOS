@@ -1,57 +1,46 @@
 <div class="sidebar">
   <ul class="nav nav-pills flex-column mb-4">
 
-    {% if perms.brands.delete_brand %}
     <li class="nav-item">
       <a href="{% url 'dashboard' %}" class="nav-link link-body-emphasis">
         <i class="bi bi-bar-chart-line-fill me-2"></i> Painel
       </a>
     </li>
-    {% endif %}
 
     <li class="nav-item">
       <a href="{% url 'sale_list' %}" class="nav-link link-body-emphasis">
         <i class="bi bi-cart2 me-2"></i> Vendas
       </a>
     </li>
-
-    <li class="nav-item">
-      <a href="{% url 'brand_list' %}" class="nav-link link-body-emphasis">
-        <i class="bi bi-patch-check me-2"></i> Marcas
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a href="{% url 'category_list' %}" class="nav-link link-body-emphasis">
-        <i class="bi bi-bookmarks me-2"></i> Categorias
-      </a>
-    </li>
-
     <li class="nav-item">
       <a href="{% url 'product_list' %}" class="nav-link link-body-emphasis">
         <i class="bi bi-box-seam me-2"></i> Produtos
       </a>
     </li>
-
-    {% if perms.inflows.add_inflow %}
+    <li class="nav-item">
+      <a href="{% url 'category_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-tag"></i> Categorias
+      </a>
+    </li>
     <li class="nav-item">
       <a href="{% url 'inflow_list' %}" class="nav-link link-body-emphasis">
         <i class="bi bi-box-arrow-up me-2"></i> Entradas
       </a>
     </li>
-    {% endif %}
 
-    {% if perms.outflows.add_outflow %}
     <li class="nav-item">
       <a href="{% url 'outflow_list' %}" class="nav-link link-body-emphasis">
         <i class="bi bi-box-arrow-down me-2"></i> Saídas
       </a>
     </li>
-    {% endif %}
+
 
     <li class="nav-item">
-      <a href="{% url 'product_return_list' %}" class="nav-link link-body-emphasis">
-        <i class="bi bi-bag-x me-2"></i> Devoluções
+      <a href="{% url 'orders_list' %}" class="nav-link link-body-emphasis">
+        <i class="bi bi-chat-left-dots me-2"></i> Pedidos Online
+          {% if active_orders %}
+            <span class="badge text-bg-warning rounded-circle">{{active_orders}}</span>
+          {% endif %}
       </a>
     </li>
 
@@ -77,7 +66,20 @@
           <i class="bi bi-toggle-{{ request.session.toggle }}"></i> Inverter Tema
         </a>
       </li>
+      <li>
+        <a href="{% url 'webstore_home' %}" class="dropdown-item">
+          <i class="bi bi-cursor-fill"></i> Loja Virtual
+        </a>
+      </li>
+      {% if request.user.is_superuser %}
+      <li>
+        <a href="{% url 'admin:index' %}" class="dropdown-item" target="_blank">
+          <i class="bi bi-speedometer2"></i> Painel Admin
+        </a>
+      </li>
+      {% endif%}
     </ul>
+    
   </div>
   <div class="d-flex flex-column align-items-start">
 

@@ -33,11 +33,14 @@
       <div class="row">
         <div class="d-flex justify-content-center align-items-center py-3 bg-dark">
           <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
-              <a type="button" href="{% url 'sale_list' %}" class="btn btn-outline-success">
-                <i class="bi bi-cart2 me-2"></i>Vendas
+              <a type="button" href="{% url 'start_sale' %}" class="btn btn-outline-success">
+                <i class="bi bi-cart2 me-2"></i>Vender
               </a>
-              <a type="button" href="{% url 'dashboard' %}" class="btn btn-outline-light">
-                <i class="bi bi-bar-chart-line-fill me-2"></i>Painel
+              <a type="button" href="{% url 'orders_list' %}" class="btn btn-outline-light">
+                <i class="bi bi-chat-left-dots me-2"></i>Pedidos
+                {% if active_orders %}
+                  <span class="badge text-bg-warning rounded-circle">{{active_orders}}</span>
+                {% endif %}
               </a>
               <a type="button" href="{% url 'product_list' %}" class="btn btn-outline-warning">
                 <i class="bi bi-box-seam me-2"></i>Produtos

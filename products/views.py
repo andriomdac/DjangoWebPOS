@@ -5,13 +5,14 @@ from .forms import ProductForm, ProductUpdateForm
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import ProtectedError
-from sales.models import SaleItemReturn
-from sales.forms import SaleItemReturnForm
 from sales.models import Sale, SaleItem
 from django.db import transaction
-from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from app.utils import add_pagination_to_view_context
+from categories.models import Category
+from sales.utils import handle_sale_id_in_session
+from orders.utils import is_there_active_orders
+from django.contrib.auth.decorators import permission_required, login_required
 
 
 class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -19,58 +20,58 @@ class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
     template_name = 'product_create.html'
     form_class = ProductForm
     success_url = reverse_lazy('product_list')
-    permission_required = 'products.add_product'
+    permission_required = 'products.delete_product'
 
     def form_valid(self, form):
+        form.instance.product_image = self.request.FILES.get('product_image')
         response = super().form_valid(form)
         messages.success(
             self.request,
             f'Produto "{self.object.name}" adicionado com sucesso!'
-            )
+        )
         return response
 
-
 @login_required
-@permission_required(['products.view_product'])
+@permission_required('products.view_product', raise_exception=True)
 def product_list_view(request):
     products = Product.objects.all()
     search = request.GET.get('search')
+    category_id = request.GET.get('category')
 
     if search:
         try:
-            search = int(search)
-            products = products.filter(barcode__contains=search)
-        except TypeError:
-            products = products.filter(name__contains=search)
-        except ValueError:
-            products = products.filter(name__contains=search)
+            search_int = int(search)
+            products = products.filter(barcode__icontains=search_int)
+        except (TypeError, ValueError):
+            products = products.filter(name__icontains=search)
+
+    if category_id:
+        products = products.filter(category__id=category_id)
+
     context = {
         'products': products,
     }
 
     add_pagination_to_view_context(
         request,
-        object_list=products,
+        object_list=products.order_by('name'),
         context=context,
         per_page=20
-        )
+    )
 
-    if 'sale_id' in request.session:
-        context['sale_id'] = request.session['sale_id']
-        sale = get_object_or_404(Sale, id=context['sale_id'])
-        if sale.items.all().count() > 0:
-            context['active_sale'] = request.session['sale_id']
-            messages.warning(request, "Existe uma venda em aberto")
-            return render(request, 'product_list.html', context)
-        else:
-            sale.delete()
-            del request.session['sale_id']
+    handle_sale_id_in_session(request, context)
+    is_there_active_orders(request, context)
 
+    categories = Category.objects.all()
+    context['categories'] = categories
+    if request.user.has_perm('products.delete_product'):
+        context['has_perm'] = 'delete_product'
     return render(request, 'product_list.html', context)
 
 
+
 @login_required
-@permission_required(['sales.add_sale'])
+@permission_required('products.view_product', raise_exception=True)
 @transaction.atomic
 def product_item_add_to_sale(request, pk):
     if not request.session.get('sale_id'):
@@ -125,7 +126,7 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     template_name = 'product_update.html'
     form_class = ProductUpdateForm
     success_url = reverse_lazy('product_list')
-    permission_required = 'products.change_product'
+    permission_required = 'products.delete_product'
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -133,8 +134,9 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         return response
 
 
+
 @login_required
-@permission_required(['products.delete_product'])
+@permission_required('products.delete_product', raise_exception=True)
 def product_delete_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
@@ -157,39 +159,8 @@ class ProductDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
     context_object_name = 'product'
     permission_required = 'products.view_product'
 
-
-@login_required
-@permission_required(['sales.add_sale'])
-def product_return_view(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    form = SaleItemReturnForm()
-
-    if request.method == 'POST':
-        form = SaleItemReturnForm(request.POST)
-        if form.is_valid():
-            return_form = form.save(commit=False)
-            return_form.product = product
-            return_form.value = product.selling_price
-            return_form.save()
-            messages.success(request, f"Devolução do item '{product.name}' realizada com sucesso.")
-            return redirect('product_list')
-
-    context = {
-        'form': form,
-        'product': product
-    }
-
-    if 'sale_id' in request.session:
-        context['sale_id'] = request.session['sale_id']
-
-    return render(request, template_name='product_return_form.html', context=context)
-
-
-@login_required
-@permission_required(['sales.add_sale'])
-def product_return_list_view(request):
-    product_list = SaleItemReturn.objects.all().order_by('-created_at')
-    context = {
-        'product_list': product_list,
-    }
-    return render(request, template_name="product_return_list.html", context=context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.has_perm('products.delete_product'):
+            context['has_perm'] = 'delete_product'
+        return context

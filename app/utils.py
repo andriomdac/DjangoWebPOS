@@ -1,11 +1,14 @@
 def toggle_theme(request):
     from django.shortcuts import redirect
 
-
-    if 'light' in request.session['theme']:
-        request.session['theme'] = 'dark'
-        request.session['toggle'] = 'off'
-    else:
+    try:
+        if 'light' in request.session['theme']:
+            request.session['theme'] = 'dark'
+            request.session['toggle'] = 'off'
+        else:
+            request.session['theme'] = 'light'
+            request.session['toggle'] = 'on'
+    except KeyError:
         request.session['theme'] = 'light'
         request.session['toggle'] = 'on'
 

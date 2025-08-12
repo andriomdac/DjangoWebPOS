@@ -1,5 +1,5 @@
 from django import forms
-from .models import SaleItem, PaymentMethod, SaleItemReturn
+from .models import SaleItem, PaymentMethod
 
 
 class SaleItemForm(forms.ModelForm):
@@ -31,18 +31,4 @@ class PaymentMethodForm(forms.ModelForm):
         labels = {
             'method_name': 'Método de Pagamento',
             'value': 'Valor'
-        }
-
-
-class SaleItemReturnForm(forms.ModelForm):
-    class Meta:
-        model = SaleItemReturn
-        fields = ["quantity", "value",]
-        widgets = {
-            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
-            'value': forms.NumberInput(attrs={'class': 'form-control'}),
-        }
-        labels = {
-            'quantity': 'Quantidade',
-            'value': 'Valor',
         }

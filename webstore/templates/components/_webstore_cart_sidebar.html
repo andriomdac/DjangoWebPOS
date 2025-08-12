@@ -1,0 +1,22 @@
+<div class="flex-shrink-0 p-3 bg-white" style="width: 280px;">
+  <a href="{% url 'webstore_home' %}" class="btn btn-outline-dark align-items-center gap-2 px-4 py-2 rounded-pill shadow-sm">
+    <i class="bi bi-house-door-fill"></i> Início
+  </a>
+  <br><br>
+  <form method="post" action="{% url 'webstore_home' %}">
+    {% csrf_token %}
+    <div class="input-group mb-5 shadow-sm rounded-pill overflow-hidden">
+        <input type="text" name="search" autofocus="" class="form-control border-0 ps-4" placeholder="Buscar..." aria-label="Search" aria-describedby="search-button">
+        <button class="btn btn-dark px-4 rounded-0" type="submit" id="search-button">
+          <i class="bi bi-search"></i>
+        </button>
+    </div>
+  </form>
+  
+  <ul class="list-unstyled ps-0">
+    <li class="mb-1">
+      
+    </li>
+    <li class="border-top my-3"></li>
+  </ul>
+</div>

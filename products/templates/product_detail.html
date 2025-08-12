@@ -1,28 +1,93 @@
 {% extends "base.html" %}
+
 {% block title %}Produtos{% endblock %}
+
 {% block content %}
-<div class="container mt-5"> <!-- Keep this div -->
-    <div class="card shadow-lg"> <!-- Keep this div -->
-        <div class="card-header text-center bg-dark text-white"> <!-- Keep this div, change only the content inside -->
-            <h3 class="mb-0">{{ product.name }}</h3>
-        </div>
-        <div class="card-body">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Marca:</strong> {{ product.brand }}</li>
-                <li class="list-group-item"><strong>Categoria:</strong> {{ product.category }}</li>
-                <li class="list-group-item"><strong>Descrição:</strong> {{ product.description }}</li>
-                <li class="list-group-item"><strong>Preço de Custo:</strong> {{ product.cost_price }}</li>
-                <li class="list-group-item"><strong>Preço de Venda:</strong> {{ product.selling_price }}</li>
-                <li class="list-group-item"><strong>Quantidade:</strong> {{ product.quantity }}</li>
-                <li class="list-group-item"><strong>Criação do Registro:</strong> {{ product.created_at }}</li>
-                <li class="list-group-item"><strong>Atualização do Registro:</strong> {{ product.updated_at }}</li>
-                <li class="list-group-item"><strong>Código de Barras:</strong> {{ product.barcode }}</li>
-            </ul>
-        </div>
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">
+            Detalhes do Produto
+        </h2>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Voltar para Lista
+        </a>
     </div>
 </div>
-<br>
-<a href="{% url 'product_list' %}">
-    <button type="button" class="btn btn-secondary btn-lg w-100">Retornar</button>
-</a>
+
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
+
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-header bg-dark text-white text-center py-3">
+        <h4 class="mb-0">{{ product.name }}</h4>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Descrição:</strong>
+                <span>{{ product.description }}</span>
+            </li>
+            {% if has_perm %}
+                {% if has_perm == 'delete_product' %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>Preço de Custo:</strong>
+                        <span>{{ product.cost_price }}</span>
+                    </li>    
+                {% endif %}
+            {% endif %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Preço de Venda:</strong>
+                <span>{{ product.selling_price }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Quantidade:</strong>
+                <span>{{ product.quantity }}</span>
+            </li>
+            {% if has_perm %}
+                {% if has_perm == 'delete_product' %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>Criação do Registro:</strong>
+                        <span>{{ product.created_at|date:"d/m/Y H:i" }}</span>
+                    </li>
+                {% endif %}
+            {% endif %}
+            {% if has_perm %}
+                {% if has_perm == 'delete_product' %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>Atualização do Registro:</strong>
+                        <span>{{ product.updated_at|date:"d/m/Y H:i" }}</span>
+                    </li>
+                {% endif %}
+            {% endif %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Código de Barras:</strong>
+                <span>{{ product.barcode }}</span>
+            </li>
+        </ul>
+        
+        {% if product.product_image %}
+        <div class="mt-4 text-center">
+            <img src="{{ product.product_image.url }}" alt="Imagem do Produto" class="img-fluid rounded" style="max-height: 300px;">
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% if has_perm %}
+    {% if has_perm == 'delete_product' %}
+        <div class="mt-4 d-flex justify-content-between">
+            <div>
+                <a href="{% url 'product_update' product.pk %}" class="btn btn-primary me-2">
+                    <i class="bi bi-pencil me-1"></i> Editar
+                </a>
+                <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i> Excluir
+                </a>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+
 {% endblock %}

@@ -1,0 +1,1 @@
+gunicorn --bind 0.0.0.0:8001 app.wsgi:application --workers 2 --threads 2

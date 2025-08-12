@@ -1,169 +1,149 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}Painel de Controle{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Resumo de Vendas{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12 text-center mb-4">
-            <div class="row mt-4">
-                <div class="col-12">
-                    <form method="GET" action="{% url 'dashboard' %}" class="justify-content-center p-4 shadow-sm bg-auto rounded">
-                        <div class="input-group input-group-lg">
-                            <input 
-                                type="date" 
-                                class="form-control rounded-start" 
-                                id="query_date" 
-                                name="query_date" 
-                                value="{{ request.GET.query_date|default:'' }}" 
-                                placeholder="Selecione uma data">
-                            <button 
-                                type="submit" 
-                                class="btn btn-primary rounded-end">
-                                Consultar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div><br>
-            
-            <h4 class="text-muted">{{ query_date }}</h4>
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <h2 class="fw-bold text-gradient m-0">Painel de Vendas</h2>
 
-        </div>
+        <form method="post" class="d-flex flex-wrap align-items-center gap-2">
+            {% csrf_token %}
+            <div class="btn-group" role="group">
+                <button type="submit" name="today" class="btn btn-outline-primary btn-sm">Hoje</button>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <input type="date" name="date" id="date" class="form-control form-control-sm shadow-sm">
+                <button type="submit" id="date-btn" class="btn btn-success btn-sm">Buscar</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="row text-center">
-        <!-- Sales Summary -->
-        <div class="col-md-4 mb-3">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5>Total de Vendas</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="text-primary toggle-value">R$ {{ sales_total_value|floatformat:2 }}</h2>
-                    <button class="btn btn-sm btn-outline-primary toggle-btn"></button>
-                </div>
-            </div>
-        </div>
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
 
-        <!-- Number of Sales -->
-        <div class="col-md-4 mb-3">
-            <div class="card border-success">
-                <div class="card-header bg-success text-white">
-                    <h5>Número de Vendas Hoje</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="text-success toggle-value">{{ num_sales_today }}</h2>
-                    <button class="btn btn-sm btn-outline-success toggle-btn"></i></button>
-                </div>
-            </div>
-        </div>
+<!-- Selected Date Badge and Type Buttons -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
+    <span class="badge bg-light text-dark px-3 py-2 fs-6 shadow-sm rounded-pill text-center">
+        {% if date_type %}
+            {% if date_type == 'day' %}
+                {{ date }}
+            {% elif date_type == 'month' %}
+                Mês {{ date.month }} de {{ date.year }}
+            {% elif date_type == 'year' %}
+                Ano {{ date.year }}
+            {% endif %}
+        {% else %}
+            {{ date }}
+        {% endif %}
+    </span>
 
-        <!-- Items Sold -->
-        <div class="col-md-4 mb-3">
-            <div class="card border-info">
-                <div class="card-header bg-info text-white">
-                    <h5>Itens Vendidos Hoje</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="text-info toggle-value">{{ num_items_sold_today }}</h2>
-                    <button class="btn btn-sm btn-outline-info toggle-btn"></i></button>
-                </div>
+    <form method="post" class="d-flex flex-wrap gap-2">
+        {% csrf_token %}
+        <button type="submit" name="day" class="btn btn-light text-dark btn-md">Dia</button>
+        <button type="submit" name="month" class="btn btn-light text-dark btn-md">Mês</button>
+        <button type="submit" name="year" class="btn btn-light text-dark btn-md">Ano</button>
+    </form>
+    
+</div>
+
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100" style="background-color:darkorange;">
+            <div class="card-body text-center">
+                <h5 class="text-light"><strong>Quantidade de Vendas</strong></h5>
+                <p class="display-5 fw-bold text-light mb-0"><strong>{{ sales_quantity }}</strong></p>
             </div>
         </div>
     </div>
-
-    <div class="row text-center">
-        <!-- Returns Summary -->
-        <div class="col-md-6 mb-3">
-            <div class="card border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5>Valor de Devoluções</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="text-danger toggle-value">R$ {{ returns_total_value|floatformat:2 }}</h2>
-                    <button class="btn btn-sm btn-outline-danger toggle-btn"></i></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Profit Today -->
-        <div class="col-md-6 mb-3">
-            <div class="card border-warning">
-                <div class="card-header bg-warning text-white">
-                    <h5>Lucro Hoje</h5>
-                </div>
-                <div class="card-body">
-                    <h2 class="text-warning toggle-value">R$ {{ profit_today|floatformat:2 }}</h2>
-                    <button class="btn btn-sm btn-outline-warning toggle-btn"></button>
-                </div>
+    <div class="col-md-4">
+        <div class="card bg-primary border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body text-center">
+                <h5 class="text-light">Valor Total Vendido</h5>
+                <p class="display-5 fw-bold text-light mb-0">R$ {{ total_value_sold }}</p>
             </div>
         </div>
     </div>
-
-    <div class="row text-center">
-        <!-- Top Selling Product -->
-        <div class="col-12 mb-3">
-            <div class="card border-light">
-                <div class="card-header bg-dark text-white">
-                    <h5>Produto Mais Vendido</h5>
-                </div>
-                <div class="card-body">
-                    {% if top_selling_product %}
-                        <h4 class="toggle-value">{{ top_selling_product.product__name }}</h4>
-                        <p class="toggle-value">Quantidade: {{ top_selling_product.total_quantity }}</p>
-                    {% else %}
-                        <p class="text-muted">Sem dados de vendas disponíveis para hoje</p>
-                    {% endif %}
-                </div>
+    <div class="col-md-4">
+        <div class="card bg-success border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body text-center">
+                <h5 class="text-light">Lucro Total</h5>
+                <p class="display-5 fw-bold text-light mb-0">R$ {{ total_profit }}</p>
             </div>
         </div>
     </div>
+</div>
 
+<!-- Payment by Method -->
+<div class="mb-4">
+    <h4 class="fw-semibold text-secondary-emphasis">Pagamentos por Método</h4>
     <div class="row text-center">
-        <!-- Stock Summary -->
-        <div class="col-md-6 mb-3">
-            <div class="card border-secondary">
-                <div class="card-header bg-secondary text-white">
-                    <h5>Valor Total do Estoque</h5>
-                </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
                 <div class="card-body">
-                    <h2 class="text-secondary toggle-value">R$ {{ total_stock_value|floatformat:2 }}</h2>
-                    <button class="btn btn-sm btn-outline-secondary toggle-btn"></i></button>
+                    <h6 class="text-muted mb-1">Cartão</h6>
+                    <p class="fs-4 fw-semibold">{{ CARTÃO|default:0 }}</p>
                 </div>
             </div>
         </div>
-
-        <!-- Stock Profit -->
-        <div class="col-md-6 mb-3">
-            <div class="card border-secondary">
-                <div class="card-header bg-secondary text-white">
-                    <h5>Lucro Total do Estoque</h5>
-                </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
                 <div class="card-body">
-                    <h2 class="text-secondary toggle-value">R$ {{ total_stock_profit }}</h2>
-                    <button class="btn btn-sm btn-outline-secondary toggle-btn"></button>
+                    <h6 class="text-muted mb-1">Dinheiro</h6>
+                    <p class="fs-4 fw-semibold">{{ DINHEIRO|default:0 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Pix</h6>
+                    <p class="fs-4 fw-semibold">{{ PIX|default:0 }}</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.toggle-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const valueElement = this.previousElementSibling;
-                if (valueElement.style.display === 'none') {
-                    valueElement.style.display = '';
-                    this.innerHTML = ''; // Icon when showing the value
-                } else {
-                    valueElement.style.display = 'none';
-                    this.innerHTML = ''; // Icon when hiding the value
-                }
-            });
-        });
-    });
-    </script>
-    
+<!-- Payment Detail Table -->
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body p-0">
+        <h4 class="pt-4 mb-3 fw-semibold text-secondary-emphasis">Detalhamento dos Pagamentos</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle mb-0">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th scope="col">Venda</th>
+                        <th scope="col">Valor</th>
+                        <th scope="col">Método</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    {% for sale in page_obj %}
+                        {% for payment_method in sale.payment_methods.all %}
+                            <tr>
+                                <td>#{{ payment_method.sale.pk }} - {{ payment_method.sale.created_at }}</td>
+                                <td>R$ {{ payment_method.value }}</td>
+                                <td>{{ payment_method.method_name }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-muted py-4">Nenhuma venda encontrada.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="mt-4">
+    {% include 'components/_pagination.html' %}
+</div>
 {% endblock %}

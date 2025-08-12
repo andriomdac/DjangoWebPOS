@@ -1,67 +1,84 @@
 {% extends "base.html" %}
-{% block title %} Finalizar Venda {% endblock %}
+{% block title %}Finalizar Venda{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <!-- Left Column: Payment Form -->
-        <div class="col-md-6">
-            <h4 class="mb-4">Adicionar Pagamento</h4>
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">
+            Finalizar Venda
+        </h2>
+    </div>
+</div>
 
-            <!-- Display Form Errors -->
-            {% if form.errors %}
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <div class="alert alert-warning">{{ error }}</div>
+<div class="row mb-3">
+    <div class="col-md-12 text-center">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Coluna: Adicionar Pagamento -->
+    <div class="col-md-6">
+        <div class="card shadow-sm rounded-4 border-0">
+            <div class="card-header bg-primary text-white fw-semibold">
+                <i class="bi bi-credit-card-fill me-1"></i> Adicionar Pagamento
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            {% endif %}
+                {% endif %}
 
-            <!-- Display Messages -->
-            {% include 'components/_messages.html' %}
-
-
-            <!-- Finalize Sale Button -->
-            {% if sale_is_fully_paid %}
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" name="name" value="finalize" autofocus="" class="btn btn-success btn-lg w-100">Finalizar Venda</button>
-                </form>
-            {% else %}
-            <!-- Add Payment Form -->
-            <form method="post" class="border p-4 rounded shadow-sm">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Adicionar Pagamento</button>
-            </form>
-            {% endif %}
-
+                {% if sale_is_fully_paid %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" autofocus="" name="name" value="finalize" class="btn btn-success btn-lg w-100">
+                            <i class="bi bi-check-circle-fill me-1"></i> Finalizar Venda
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-plus-circle-fill me-1"></i> Adicionar Pagamento
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
+    </div>
 
-        <!-- Right Column: Payments Summary -->
-        <div class="col-md-6">
-            <h4>Pagamentos</h4>
-            <div class="border p-4 rounded shadow-sm">
-                <!-- Sale Total -->
+    <!-- Coluna: Detalhes da Venda -->
+    <div class="col-md-6">
+        <div class="card shadow-sm rounded-4 border-0">
+            <div class="card-header bg-info text-white fw-semibold">
+                <i class="bi bi-receipt me-1"></i> Resumo de Pagamentos
+            </div>
+            <div class="card-body">
+                <!-- Total da Venda -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5>Total da Venda:</h5>
                     <span class="badge text-bg-info fs-5 px-3 py-2">R$ {{ sale.total }}</span>
                 </div>
+
                 {% if not sale_is_fully_paid %}
-                <form method="post" class="d-flex">
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <button type="submit" name="name" value="discount" class="btn btn-info">
-                            <i class="bi bi-cash"></i>
+                    <!-- Aplicar Desconto -->
+                    <form method="post" class="input-group mb-4">
+                        {% csrf_token %}
+                        <button type="submit" name="name" value="discount" class="btn btn-outline-info">
+                            <i class="bi bi-cash me-1"></i> Desconto
                         </button>
-                        <input type="number" name="value" class="form-control" placeholder="Desconto" min="1" required>
-                    </div>
-                </form><br>
+                        <input type="number" name="value" class="form-control" placeholder="Valor do desconto" min="1" required>
+                    </form>
                 {% endif %}
 
-                <!-- Payment Breakdown -->
+                <!-- Breakdown de Pagamento -->
                 <div class="border rounded p-3 mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
                         <h5>Total Pago:</h5>
                         <span class="badge text-bg-success fs-5 px-3 py-2">R$ {{ total_paid }}</span>
                     </div>
@@ -78,21 +95,23 @@
                     {% endif %}
                 </div>
 
-                <!-- Payments List -->
+                <!-- Lista de Pagamentos -->
                 <div class="overflow-auto" style="max-height: 300px;">
                     <ol class="list-group list-group-numbered">
                         {% for item in sale_payments %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex flex-column">
-                                    <span class="fw-bold">{{ item.method_name }}</span>
+                                <div>
+                                    <span class="fw-semibold">{{ item.method_name }}</span>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <span class="badge bg-light rounded-pill text-dark me-2">R$ {{ item.value }}</span>
+                                    <span class="badge bg-light text-dark rounded-pill me-2">R$ {{ item.value }}</span>
                                     <a href="{% url 'payment_method_delete' item.pk %}" class="btn btn-danger btn-sm">
                                         <i class="bi bi-trash-fill"></i>
                                     </a>
                                 </div>
                             </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">Nenhum pagamento registrado.</li>
                         {% endfor %}
                     </ol>
                 </div>

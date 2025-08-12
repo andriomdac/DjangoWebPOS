@@ -1,145 +1,144 @@
 {% extends "base.html" %}
+
 {% block title %}Produtos{% endblock %}
+
 {% block content %}
-<br>
-    <div class="row">
-
-        {% include 'components/_messages.html' %}
-    
-        <div class="col-md-6">
-            <form method="get">
-                <div class="input-group mb-3">
-                    <input type="text" name="search" autofocus="" class="form-control" placeholder="Buscar">
-                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-        </div>
-        <div class="col-md-3">
-            {% if sale_id %}
-            <a href="{% url 'start_sale' %}">
-                <button type="button" class="btn btn-warning"><i class="bi bi-cart-fill"></i> Ir para Carrinho</button>
-            </a>
-            {% endif %}
-        </div>
-        <div class="col-md-3 d-flex justify-content-end">
-            {% if perms.products.create_product %}
-            <a href="{% url 'product_create' %}">
-                <button type="button" class="btn btn-success"><i class="bi bi-plus-circle"></i> Novo(a)</button>
-            </a>
-            {% endif %}
-        </div>
-    </div><br>
-
-    <table class="table table-auto table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>
-                    Adicionar à Venda
-                </th>
-                <th>
-                    ID
-                </th>
-                <th>
-                    Nome
-                </th>
-                <th>
-                    Marca
-                </th>
-                {% if perms.products.add_product %}
-                <th>
-                    Preço de Custo
-                </th>
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">Produtos</h2>
+            {% if has_perm %}
+                {% if has_perm == 'delete_product' %}
+                    <a href="{% url 'product_create' %}" class="btn btn-success shadow-sm">
+                        <i class="bi bi-plus-circle me-1"></i> Novo(a)
+                    </a>
                 {% endif %}
-                <th>
-                    Preço de Venda
-                </th>
-                <th>
-                    Estoque
-                </th>
-                <th>
-                    Ações
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in page_obj %}
-            <tr>
-                <td>
-                    <form method="post" class="d-flex" action="{% url 'product_item_add_to_sale' product.pk %}">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <button type="submit" class="btn btn-info">
-                                <i class="bi bi-bag-plus-fill"></i>
-                            </button>
-                            <input type="number" name="quantity" class="form-control" value="1" placeholder="Quantidade" min="1" required>
-                        </div>
-                    </form>                    
-                </td>
-                <td>{{ product.id }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.brand }}</td>
-                {% if perms.products.add_product %}
-                <td>R$ {{ product.cost_price }}</td>
-                {% endif %}
-                <td>R$ {{ product.selling_price }}</td>
-                <td>{{ product.quantity }}</td>
-                <td>
-                    <div class="dropdown">
-                        <button 
-                            class="btn btn-light dropdown-toggle" 
-                            type="button" 
-                            id="dropdownMenuButton{{ product.id }}" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false">
-                            Opções
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ product.id }}">
-                            {% if perms.inflows.add_inflow %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'inflow_create' product.pk %}">
-                                    <i class="bi bi-box-arrow-up me-2"></i>Registrar Entrada
-                                </a>
-                            </li>
-                            {% endif %}
-                            {% if perms.outflows.add_outflow %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'outflow_create' product.pk %}">
-                                    <i class="bi bi-box-arrow-down me-2"></i>Registrar Saída
-                                </a>
-                            </li>
-                            {% endif %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'product_detail' product.pk %}">
-                                    <i class="bi bi-eye-fill me-2"></i>Ver Detalhes
-                                </a>
-                            </li>
-                            {% if perms.products.change_product %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'product_update' product.pk %}">
-                                    <i class="bi bi-pencil-square me-2"></i>Editar Produto
-                                </a>
-                            </li>
-                            {% endif %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'product_return' product.pk %}">
-                                    <i class="bi bi-bag-x me-2"></i>Devolução
-                                </a>
-                            </li>
-                            {% if perms.products.delete_product %}
-                            <li>
-                                <a class="dropdown-item text-danger" href="{% url 'product_delete' product.pk %}">
-                                    <i class="bi bi-trash-fill me-2"></i>Excluir Produto
-                                </a>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-        {% endfor %}        
-        </tbody>
-    </table>
+            {% endif %}
+    </div>
+</div>
 
+<div class="row text-center">
+  {% include 'components/_messages.html' %}
+</div>
+
+<div class="row mb-3 align-items-end g-3">
+    <div class="col-md-6">
+        <form method="get" class="d-flex gap-2 flex-wrap">
+            <input type="text" name="search" value="{{ request.GET.search }}" autofocus class="form-control" placeholder="Nome ou cód. barras" style="max-width: 250px;">
+            
+            <select class="form-select" name="category" style="max-width: 300px;">
+                <option value="">Todas as categorias</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                        {{ category.category }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="col-md-3">
+        {% if sale_id %}
+            <a href="{% url 'start_sale' %}" class="btn btn-warning w-100 shadow-sm">
+                <i class="bi bi-cart-fill"></i> Ir para Carrinho
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0 text-center">
+            <thead class="table-auto">
+                <tr>
+                    <th>#ID</th>
+                    <th>Imagem</th>
+                    <th>Adicionar à venda</th>
+                    <th>Nome</th>
+                    {% if has_perm %}
+                        {% if has_perm == 'delete_product' %}
+                        <th>Preço de Custo</th>
+                        {% endif %}
+                    {% endif %}
+                    <th>Preço de Venda</th>
+                    <th>Estoque</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in page_obj %}
+                    <tr>
+                        <td class="fw-semibold text-primary">#{{ product.pk }}</td>
+                        <td>
+                            {% if product.product_image %}
+                                <img src="{{ product.product_image.url }}" alt="{{ product.name }}" class="img-thumbnail rounded" style="width: 80px; height: 80px; object-fit: contain;">
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'product_item_add_to_sale' product.pk %}" class="d-flex justify-content-center">
+                                {% csrf_token %}
+                                <div class="input-group input-group-sm w-auto">
+                                    <input type="number" name="quantity" class="form-control" value="1" placeholder="Qtd." min="1" required>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-bag-plus-fill"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                        <td>
+                            <div class="fw-semibold">{{ product.name }}</div>
+                            <div class="text-muted small fst-italic">{{ product.category }}</div>
+                        </td>
+                        {% if has_perm %}
+                            {% if has_perm == 'delete_product' %}
+                                <td class="text-muted">R$ {{ product.cost_price }}</td>
+                            {% endif %}                            
+                        {% endif %}
+                        <td class="fw-bold">R$ {{ product.selling_price }}</td>
+                        <td class="fw-semibold">{{ product.quantity }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-md btn-primary dropdown-toggle" type="button" id="dropdownMenuButton{{ product.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Opções
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuButton{{ product.id }}">
+                                    {% if has_perm %}
+                                        {% if has_perm == 'delete_product' %}
+                                            <li><a class="dropdown-item" href="{% url 'inflow_create' product.pk %}"><i class="bi bi-box-arrow-up me-2"></i>Registrar Entrada</a></li>
+                                        {% endif %}                            
+                                    {% endif %}
+                                    {% if has_perm %}
+                                        {% if has_perm == 'delete_product' %}
+                                            <li><a class="dropdown-item" href="{% url 'outflow_create' product.pk %}"><i class="bi bi-box-arrow-down me-2"></i>Registrar Saída</a></li>
+                                        {% endif %}                            
+                                    {% endif %}
+                                    <li><a class="dropdown-item" href="{% url 'product_detail' product.pk %}"><i class="bi bi-eye-fill me-2"></i>Ver Detalhes</a></li>
+                                    {% if has_perm %}
+                                        {% if has_perm == 'delete_product' %}
+                                        <li><a class="dropdown-item" href="{% url 'product_update' product.pk %}"><i class="bi bi-pencil-square me-2"></i>Editar Produto</a></li>
+                                        {% endif %}                            
+                                    {% endif %}
+                                    {% if has_perm %}
+                                        {% if has_perm == 'delete_product' %}
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="{% url 'product_delete' product.pk %}"><i class="bi bi-trash-fill me-2"></i>Excluir Produto</a></li>
+                                        {% endif %}                            
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
     {% include 'components/_pagination.html' %}
+</div>
 
 {% endblock %}

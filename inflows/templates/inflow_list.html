@@ -1,73 +1,66 @@
 {% extends "base.html" %}
+
 {% block title %}Entradas{% endblock %}
+
 {% block content %}
-<br>
-    <div class="row">
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">Registros de Entrada</h2>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por produto" value="{{ request.GET.search }}">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
         {% include 'components/_messages.html' %}
+    </div>
+</div>
 
-        <div class="col-md-6">
-            <form method="get">
-                <div class="input-group mb-3">
-                    <input type="text" name="search" class="form-control" placeholder="Buscar por produto">
-                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-        </div>
-        <div class="col-md-3"></div>
-    </div><br>
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0 text-center">
+            <thead>
+                <tr>
+                    <th scope="col">#ID</th>
+                    <th scope="col">Data de Criação</th>
+                    <th scope="col">Produto</th>
+                    <th scope="col">Quantidade</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inflow in page_obj %}
+                    <tr>
+                        <td class="fw-semibold text-success">#{{ inflow.id }}</td>
+                        <td>{{ inflow.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>{{ inflow.product }}</td>
+                        <td>{{ inflow.quantity }}</td>
+                        <td>
+                            <a href="{% url 'inflow_detail' inflow.pk %}" class="btn btn-sm btn-success">
+                                <i class="bi bi-eye-fill"></i> Visualizar
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-muted py-4 fst-italic">Nenhuma entrada registrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    <table class="table table-auto table-striped-columns">
-        <thead class="table-dark">
-            <tr>
-                <th>
-                    ID
-                </th>
-                <th>
-                    Criação do Registro
-                </th>
-                <th>
-                    Produto
-                </th>
-                <th>
-                    Marca
-                </th>
-                <th>
-                    Quantidade
-                </th>
-                <th>
-                    Ações
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-    {% for inflow in inflows %}
-        <tr>
-            <td>
-                {{inflow.id}}
-            </td>
-            <td>
-                {{inflow.created_at}}
-            </td>
-            <td>
-                {{inflow.product}}
-            </td>
-            <td>
-                {{inflow.product.brand}}
-            </td>
-            <td>
-                {{inflow.quantity}}
-            </td>
-            <td>
-                <a href="{% url 'inflow_detail' inflow.pk %}">
-                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
-                </a>
-            </td>
-        </tr>
-
-    {% endfor %}
-        </tbody>
-    </table>
-
+<div class="mt-4">
     {% include 'components/_pagination.html' %}
-
+</div>
 {% endblock %}

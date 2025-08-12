@@ -1,12 +1,8 @@
 from django.urls import path
-from .views import (CategoryCreateView, CategoryListView,
-                    CategoryUpdateView, category_delete_view,
-                    CategoryDetailView)
+from .views import category_add_view, category_list_view
 
 urlpatterns = [
-    path('add/', CategoryCreateView.as_view(), name='category_create'),
-    path('list/', CategoryListView.as_view(), name='category_list'),
-    path('list/<int:pk>/', CategoryDetailView.as_view(), name='category_detail'),
-    path('update/<int:pk>/', CategoryUpdateView.as_view(), name='category_update'),
-    path('delete/<int:pk>', category_delete_view, name='category_delete'),
+    path('add/', category_add_view, name='category_create'),
+    path('list/', category_list_view, name='category_list'),
+
 ]

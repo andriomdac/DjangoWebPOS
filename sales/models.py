@@ -84,21 +84,3 @@ class PaymentMethod(models.Model):
 
     def __str__(self):
         return self.method_name
-
-
-class SaleItemReturn(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='returns')
-    quantity = models.IntegerField(
-        default=1,
-        validators=[MinValueValidator(1, message="A quantidade deve ser maior que zero")]
-        )
-    value = models.DecimalField(
-        decimal_places=2,
-        max_digits=10,
-        default=0.00,
-        validators=[MinValueValidator(0.01, message='O valor deve ser maior que zero.')]
-        )
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.product.name

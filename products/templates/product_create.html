@@ -1,61 +1,74 @@
 {% extends "base.html" %}
-{% block title %}Produtos{% endblock %}
+
+{% block title %}Adicionar Produto{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-lg">
-        <div class="card-header text-center bg-dark text-white">
-            <h3>Adicionar Produto</h3>
-        </div>
-        {% if form.errors %}
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <div class="alert alert-warning">{{error}} </div>
-                {% endfor %}
-            {% endfor %}
-        {% endif %}
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-
-                <div class="mb-4">
-                    <label class="form-label">Nome do Produto</label>
-                    {{ form.name }}
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Marca</label>
-                    {{ form.brand }}
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Categoria</label>
-                    {{ form.category }}
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">Descrição</label>
-                    {{ form.description }}
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">Preço de Custo</label>
-                    R${{ form.cost_price }}
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">Preço de Venda</label>
-                    R${{ form.selling_price }}
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">Código de Barras</label>
-                    {{ form.barcode }}
-                </div>
-
-                <div class="d-flex flex-column gap-3 mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg w-100">Adicionar</button>
-                    <a href="{% url 'product_list' %}"><button type="button" class="btn btn-secondary btn-lg w-100">Retornar</button></a>
-                </div>
-            </form>
-        </div>
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">Adicionar Produto</h2>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left-circle me-1"></i> Voltar à Lista
+        </a>
     </div>
 </div>
 
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
 
+<div class="card shadow-sm rounded-4 border-2">
+    <div class="card-body">
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Nome do Produto</label>
+                {{ form.name }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Descrição</label>
+                {{ form.description }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">
+                    Categoria
+                    <a href="{% url 'category_create' %}" class="ms-2"><i class="bi bi-plus-circle-fill"></i></a>
+                </label>
+                {{ form.category }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Preço de Custo</label>
+                {{ form.cost_price }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Preço de Venda</label>
+                {{ form.selling_price }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Imagem do Produto</label>
+                {{ form.product_image }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Código de Barras</label>
+                {{ form.barcode }}
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-check-circle me-1"></i> Adicionar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

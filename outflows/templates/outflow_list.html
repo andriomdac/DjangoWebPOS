@@ -1,74 +1,65 @@
 {% extends "base.html" %}
 {% block title %}Saídas{% endblock %}
+
 {% block content %}
-<br>
-    <div class="row">
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">Registros de Saída</h2>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get">
+            <div class="input-group shadow-sm">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por produto">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
         {% include 'components/_messages.html' %}
+    </div>
+</div>
 
-        <div class="col-md-6">
-            <form method="get">
-                <div class="input-group mb-3">
-                    <input type="text" name="search" class="form-control" placeholder="Buscar por produto">
-                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-        </div>
-        <div class="col-md-3"></div>
-    </div><br>
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-auto text-center">
+                <tr>
+                    <th scope="col">#ID</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Produto</th>
+                    <th scope="col">Quantidade</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for outflow in page_obj %}
+                    <tr>
+                        <td class="fw-semibold text-danger">#{{ outflow.id }}</td>
+                        <td>{{ outflow.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>{{ outflow.product }}</td>
+                        <td>{{ outflow.quantity }}</td>
+                        <td>
+                            <a href="{% url 'outflow_detail' outflow.pk %}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-eye-fill"></i> Visualizar
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-muted py-4">Nenhuma saída registrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    <table class="table table-auto table-striped-columns">
-        <thead class="table-dark">
-            <tr>
-                <th>
-                    ID
-                </th>
-                <th>
-                    Criação do Registro
-                </th>
-                <th>
-                    Produto
-                </th>
-                <th>
-                    Marca
-                </th>
-                <th>
-                    Quantidade
-                </th>
-                <th>
-                    Ações
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-    {% for outflow in outflows %}
-        <tr>
-            <td>
-                {{outflow.id}}
-            </td>
-            <td>
-                {{outflow.created_at}}
-            </td>
-            <td>
-                {{outflow.product}}
-            </td>
-            <td>
-                {{outflow.product.brand}}
-            </td>
-            <td>
-                {{outflow.quantity}}
-            </td>
-            <td>
-                <a href="{% url 'outflow_detail' outflow.pk %}">
-                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
-                </a>
-            </td>
-        </tr>
-
-    {% endfor %}
-        </tbody>
-    </table>
-
-
+<div class="mt-4">
     {% include 'components/_pagination.html' %}
-
+</div>
 {% endblock %}

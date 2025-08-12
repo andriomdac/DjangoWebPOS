@@ -9,35 +9,54 @@ from django.contrib.auth.decorators import login_required
 from app.utils import add_pagination_to_view_context
 from datetime import datetime, timedelta
 from icecream import ic
-
-
+from django.http import HttpResponse
+from orders.utils import is_there_active_orders
+from django.contrib.auth.decorators import permission_required, login_required
+from sales.utils import handle_sale_id_in_session
 
 @login_required
+@permission_required('products.view_product', raise_exception=True)
 def sale_list_view(request):
     sales = Sale.objects.all().order_by('-created_at')
-    context = {'sales': sales}
+    context = {}
+
+    if request.user.has_perm('products.delete_product'):
+        context['has_perm'] = 'delete_product'
+
+    if request.method == "POST":
+        if 'alter_sale' in request.POST and request.user.has_perm('products.delete_product'):
+            return redirect('alter_sale_danger', int(request.POST['alter_sale']))
+        if 'search' in request.POST and request.POST['search']:
+            sales = Sale.objects.filter(pk=int(request.POST.get('search', 0)))
+
+
+    context['sales'] = sales
 
     add_pagination_to_view_context(request, object_list=sales, context=context)
+    is_there_active_orders(request, context)
 
     if 'sale_id' in request.session:
         sale = get_object_or_404(Sale, id=request.session['sale_id'])
-
-        if sale.items.all().count() > 0:
-            context['active_sale'] = request.session['sale_id']
-            messages.warning(
-                request,
-                """Existe uma venda em aberto,
-                finalize-a para criar uma nova"""
-                )
-            return render(request, 'sale_list.html', context)
+        if sale:
+            if sale.items.all().count() > 0:
+                context['active_sale'] = request.session['sale_id']
+                messages.warning(
+                    request,
+                    """Existe uma venda em aberto,
+                    finalize-a para criar uma nova"""
+                    )
+                return render(request, 'sale_list.html', context)
+            else:
+                sale.delete()
+                del request.session['sale_id']
         else:
-            sale.delete()
             del request.session['sale_id']
 
     return render(request, 'sale_list.html', context)
 
 
 @login_required
+@permission_required('products.view_product', raise_exception=True)
 @transaction.atomic
 def sale_cart_view(request):
     if not request.session.get('sale_id'):
@@ -93,9 +112,13 @@ def sale_cart_view(request):
 
 
 @login_required
+@permission_required('products.view_product', raise_exception=True)
 @transaction.atomic
 def sale_finalize_view(request):
-    sale = get_object_or_404(Sale, id=request.session['sale_id'])
+    try:
+        sale = get_object_or_404(Sale, id=request.session['sale_id'])
+    except KeyError: #If sale_id doesn't exist in session
+        return redirect('sale_list')
     form = PaymentMethodForm()
     sale_payments = sale.payment_methods.all()
     total_paid = sum([payment.value for payment in sale_payments])
@@ -180,6 +203,7 @@ def sale_finalize_view(request):
 
 
 @login_required
+@permission_required('products.view_product', raise_exception=True)
 def sale_item_delete(request, pk):
     sale_item = get_object_or_404(SaleItem, id=pk)
     sale_item.delete()
@@ -187,6 +211,7 @@ def sale_item_delete(request, pk):
 
 
 @login_required
+@permission_required('products.view_product', raise_exception=True)
 def payment_method_delete(request, pk):
     payment_method = get_object_or_404(PaymentMethod, id=pk)
     payment_method.delete()
@@ -194,6 +219,7 @@ def payment_method_delete(request, pk):
 
 
 @login_required
+@permission_required('products.view_product', raise_exception=True)
 def sale_detail_view(request, pk):
     sale = get_object_or_404(Sale, id=pk)
     sale_items = sale.items.all()
@@ -205,3 +231,11 @@ def sale_detail_view(request, pk):
         'payment_methods': payment_methods,
     }
     return render(request, template_name='sale_detail.html', context=context)
+
+def alter_sale_danger_view(request, sale_id):
+    sale = get_object_or_404(Sale, id=sale_id)
+    if request.method == "POST":
+        sale_id = sale_id
+        request.session['sale_id'] = sale_id
+        return redirect('start_sale')
+    return render(request, template_name='alter_sale_danger.html', context={"sale": sale})

@@ -1,76 +1,90 @@
 {% extends "base.html" %}
-{% block title %} Vendas {% endblock %}
+
+{% block title %}Vendas{% endblock %}
+
 {% block content %}
-<br>
-    <div class="row">
-        <div class="col-md-6">
-        </div>
-        <div class="col-md-6 d-flex justify-content-end">
-            {% include 'components/_messages.html' %} 
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">
+        Histórico de Vendas
+        </h2>
 
-            {% if active_sale %}
-                <a href="{% url 'start_sale' %}" type="button" class="btn btn-warning d-flex align-items-center justify-content-center">
-                    <i class="bi bi-plus-circle me-2"></i> Continuar com a Venda
-                </a>
-            {% else %}
-                <a href="{% url 'start_sale' %}" type="button" class="btn btn-success d-flex align-items-center justify-content-center">
-                    <i class="bi bi-plus-circle me-2"></i> Vender
-                </a>
-            {% endif %}
-        </div>
-        
-    </div><br>
+        {% if active_sale %}
+            <a href="{% url 'start_sale' %}" class="btn btn-warning shadow-sm d-flex align-items-center">
+                <i class="bi bi-plus-circle me-2"></i> Continuar com a Venda
+            </a>
+        {% else %}
+            <a href="{% url 'start_sale' %}" class="btn btn-success shadow-sm d-flex align-items-center">
+                <i class="bi bi-plus-circle me-2"></i> Nova Venda
+            </a>
+        {% endif %}
+    </div>
+</div>
 
-    <table class="table table-auto table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>
-                    ID
-                </th>
-                <th>
-                    Registro da Venda
-                </th>
-                <th>
-                    Método de Pagamentos
-                </th>
-                <th>
-                    Valor da Venda
-                </th>
-                <th>
-                    Ações
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-    {% for sale in page_obj %}
-        <tr>
-            <td>
-                {{sale.id}}
-            </td>
-            <td>
-                {{sale.created_at}}
-            </td>
-            <td>
-                {% for payment_method in sale.payment_methods.all %}
-                    <span class="badge bg-secondary">{{ payment_method.method_name }}</span>
+<div class="row mb-3">
+    <form method="post" class="d-flex gap-2 flex-wrap">{% csrf_token %}
+        <input type="text" name="search" value="{{ request.GET.search }}" autofocus class="form-control" placeholder="Cód. da venda" style="max-width: 250px;">
+        <button class="btn btn-outline-primary" type="submit">
+            <i class="bi bi-search"></i>
+        </button>
+    </form>
+    <div class="col-md-12 text-end">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
+
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0 text-center">
+            <thead class="table-auto">
+                <tr>
+                    <th scope="col">#ID</th>
+                    <th scope="col">Registro da Venda</th>
+                    <th scope="col">Método(s) de Pagamento</th>
+                    <th scope="col">Valor Total</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in page_obj %}
+                    <tr>
+                        <td class="fw-semibold text-primary">#{{ sale.id }}</td>
+                        <td>{{ sale.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% for payment_method in sale.payment_methods.all %}
+                                <span class="badge bg-secondary">{{ payment_method.method_name }}</span>
+                            {% empty %}
+                                <span class="badge bg-warning">Venda Aberta</span>
+                            {% endfor %}
+                        </td>
+                        <td>R$ {{ sale.total }}</td>
+                        <td>
+                            <form method="post">{% csrf_token %}
+                                <a href="{% url 'sale_detail' sale.pk %}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye-fill"></i> Detalhes da Venda
+                                </a>
+                                {% if has_perm %}
+                                    {% if has_perm == 'delete_product' %}
+                                        <button type="submit" name="alter_sale" value="{{sale.pk}}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-eye-fill"></i> Reabrir Venda
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
                 {% empty %}
-                    <span class="badge bg-warning">Venda Aberta</span>
+                    <tr>
+                        <td colspan="5" class="text-muted py-4">Nenhuma venda encontrada.</td>
+                    </tr>
                 {% endfor %}
-            </td>
-            <td>
-                R$ {{sale.total}}
-            </td>
-            <td>
-                <a href="{% url 'sale_detail' sale.pk %}">
-                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
-                </a>
-            </td>
-        </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    {% endfor %}
-        </tbody>
-    </table>
-
+<div class="mt-4">
     {% include 'components/_pagination.html' %}
+</div>
 
 {% endblock %}

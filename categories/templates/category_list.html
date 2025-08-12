@@ -1,79 +1,73 @@
 {% extends "base.html" %}
-{% block title %}Categorias{% endblock %}{% block content %}
-<br>
-    <div class="row">
+
+{% block title %}Categorias{% endblock %}
+
+{% block content %}
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">Categorias de Produtos</h2>
+        {% if has_perm %}
+            {% if has_perm == 'delete_product' %}
+                <a href="{% url 'category_create' %}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Nova Categoria
+                </a>
+            {% endif  %}
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por categoria" value="{{ request.GET.search }}">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
         {% include 'components/_messages.html' %}
+    </div>
+</div>
 
-        <div class="col-md-6">
-            <form method="get">
-                <div class="input-group mb-3">
-                    <input type="text" name="search" class="form-control" placeholder="Buscar">
-                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
-                </div>
-            </form>
-        </div>
-        <div class="col-md-3"></div>
-        <div class="col-md-3 d-flex justify-content-end">
-            {% if perms.categories.add_category %}
-            <a href="{% url 'category_create' %}">
-                <button type="button" class="btn btn-success"><i class="bi bi-plus-circle"></i> Novo(a)</button>
-            </a>
-            {% endif %}
-        </div>
-    </div><br>
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0 text-center">
+            <thead class="table-auto">
+                <tr>
+                    <th scope="col">#ID</th>
+                    <th scope="col" class="text-start px-4">Nome da Categoria</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in page_obj %}
+                    <tr>
+                        <td class="fw-semibold text-primary">#{{ category.id }}</td>
+                        <td class="text-start px-4">{{ category.category }}</td>
+                        <td>
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" name="category_delete_id" value="{{ category.pk }}" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash-fill"></i> Excluir
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-muted py-4 fst-italic">Nenhuma categoria encontrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    <table class="table table-auto table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>
-                    ID
-                </th>
-                <th>
-                    Categoria
-                </th>
-                <th>
-                    Descrição
-                </th>
-                <th>
-                    Ações
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-    {% for category in categories %}
-        <tr>
-            <td>
-                {{category.id}}
-            </td>
-            <td>
-                {{category.name}}
-            </td>
-            <td>
-                {{category.description}}
-            </td>
-            <td>
-                <a href="{% url 'category_detail' category.pk %}">
-                    <button type="button" class="btn btn-primary"><i class="bi bi-eye-fill"></i></button>
-                </a>
-                {% if perms.categories.change_category %}
-                <a href="{% url 'category_update' category.pk %}">
-                    <button type="button" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
-                </a>
-                {% endif %}
-                {% if perms.categories.delete_category %}
-                <a href="{% url 'category_delete' category.pk %}">
-                    <button type="button" class="btn btn-danger"><i class="bi bi-trash-fill"></i></button>
-                </a>
-                {% endif %}
-
-            </td>
-        </tr>
-
-    {% endfor %}
-        </tbody>
-    </table>
-
+<div class="mt-4">
     {% include 'components/_pagination.html' %}
-
-
+</div>
 {% endblock %}

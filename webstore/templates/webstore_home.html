@@ -1,0 +1,49 @@
+{% extends 'webstore_base.html' %}
+
+
+
+{% block sidebar %}
+    {% include 'components/_webstore_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        {% include 'components/_messages.html' %}
+        {% for product in products %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-lg rounded-4 h-100 position-relative">
+                <img src="{% if product.product_image %}{{ product.product_image.url }}{% endif %}" 
+                     class="card-img-top rounded-top-4" 
+                     alt="{{ product.name }}"
+                     style="height: 250px; object-fit: contain; background-color: #f8f9fa;">
+                
+                <div class="card-body d-flex flex-column p-4">
+                    <h5 class="card-title fw-semibold text-dark mb-2">{{ product.name }}</h5>
+                    <p class="card-text text-muted mb-3" style="min-height: 60px;">{{ product.description }}</p>
+                    <p class="text-primary fw-bold fs-5 mb-4">R$ {{ product.selling_price }}</p>
+                    
+                    <div class="mt-auto">
+                        {% if product.quantity == 0 %}
+                            <div class="btn btn-outline-danger w-100" disabled>Indisponível</div>
+                        {% else %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary" name="direct_order" value="{{ product.pk }}">
+                                    Comprar Agora
+                                </button>
+                                <button type="submit" class="btn btn-outline-secondary" name="add_product_to_cart" value="{{ product.pk }}">
+                                    Adicionar ao Carrinho
+                                </button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

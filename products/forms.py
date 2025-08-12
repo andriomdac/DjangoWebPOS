@@ -8,24 +8,24 @@ class ProductForm(forms.ModelForm):
         exclude = ["created_at", "updated_at", "quantity",]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'autofocus': ''}),
-            'brand': forms.Select(attrs={'class': 'form-control'}),
-            'category': forms.Select(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
             'cost_price': forms.NumberInput(attrs={'class': 'form-control', 'step': 0.01}),
             'selling_price': forms.NumberInput(attrs={'class': 'form-control', 'step': 0.01}),
             'barcode': forms.NumberInput(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'product_image': forms.FileInput(attrs={'class': 'form-control'}),
+
 
         }
 
         labels = {
             'name': 'Nome',
-            'brand': 'Marca',
-            'category': 'Categoria',
             'description': 'Descrição',
             'cost_price': 'Preço de Custo',
             'selling_price': 'Preço de Venda',
             'barcode': 'Código de Barras',
+            'product_image': 'Imagem do Produto'
         }
 
     def clean_name(self):

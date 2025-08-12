@@ -5,12 +5,15 @@ from .forms import InflowCreateForm
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
-from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.paginator import Paginator
+from orders.utils import is_there_active_orders
+from app.utils import add_pagination_to_view_context
+from django.contrib.auth.decorators import permission_required, login_required
 
 
 @login_required
-@permission_required(['inflows.add_inflow'])
+@permission_required('products.delete_product', raise_exception=True)
 @transaction.atomic
 def inflow_create_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -24,36 +27,36 @@ def inflow_create_view(request, pk):
             messages.success(
                 request,
                 f'''Entrada de {inflow.quantity}
-                    unidade(s) do produto "{product.name} - {product.brand}"
+                    unidade(s) do produto "{product.name}"
                     registrada.''')
             return redirect('product_list')
+    context = {
+            'form': form,
+            'product': product
+            }
     return render(
         request,
         template_name='inflow_create.html',
-        context={
-            'form': form,
-            'product': product
-            })
+        context=context)
 
 
-class InflowListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    model = Inflow
-    template_name = 'inflow_list.html'
-    context_object_name = 'inflows'
-    ordering = ['-created_at']
-    paginate_by = 20
-    permission_required = 'inflows.view_inflow'
+@login_required
+@permission_required('products.delete_product', login_url='/products/list')
+def inflow_list_view(request):
+    search = request.GET.get('search')
+    inflows = Inflow.objects.all().order_by('-created_at')
+    context = {}
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search = self.request.GET.get('search')
-        if search:
-            queryset = queryset.filter(product__name__icontains=search)
-        return queryset
+    if search:
+        inflows = inflows.filter(product__name__icontains=search)
+
+    add_pagination_to_view_context(request, inflows, context, 10)
+    is_there_active_orders(request, context)
+    return render(request, 'inflow_list.html', context)
 
 
 class InflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Inflow
     template_name = 'inflow_detail.html'
     context_object_name = 'inflow'
-    permission_required = 'inflows.view_inflow'
+    permission_required = 'products.delete_product'

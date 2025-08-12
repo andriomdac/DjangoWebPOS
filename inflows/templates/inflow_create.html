@@ -1,38 +1,55 @@
 {% extends "base.html" %}
-{% block title %}Entradas{% endblock %}
+
+{% block title %}Nova Entrada{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-lg">
-        <div class="card-header text-center bg-dark text-white">
-            <h3>Adicionar Entrada de Produto</h3>
-        </div>
-        {% if form.errors %}
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <div class="alert alert-warning">
-                        {{error}}
-                    </div>
-                {% endfor %}
-            {% endfor %}
-        {% endif %}
-        <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ product.brand }}</h6>
-            <p class="card-text">{{ product.description }}</p>
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-4">
-                    <label for="description" class="form-label">Quantidade</label>
-                    {{ form.quantity }}
-                </div>
-                <div class="d-flex flex-column gap-3 mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg w-100">Adicionar</button>
-                    <a href="{% url 'product_list' %}"><button type="button" class="btn btn-secondary btn-lg w-100">Retornar</button></a>
-                </div>
-            </form>
-        </div>
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">Adicionar Entrada</h2>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left-circle me-1"></i> Voltar para Produtos
+        </a>
     </div>
 </div>
 
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
 
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-header bg-primary text-white rounded-top-4 text-center">
+        <h4 class="mb-0">Entrada para: {{ product.name }}</h4>
+        <small class="text-light">{{ product.brand }}</small>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">{{ product.description }}</p>
+
+        {% if form.errors %}
+            <div class="mb-3">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-warning mb-2">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="id_quantity" class="form-label fw-semibold">Quantidade</label>
+                {{ form.quantity }}
+            </div>
+            <div class="d-grid gap-3 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-down me-1"></i> Adicionar Entrada
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

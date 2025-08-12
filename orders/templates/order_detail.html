@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do Pedido{% endblock %}
+
+{% block content %}
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">
+            Detalhes do Pedido
+        </h2>
+        <span class="badge bg-secondary fs-6">Pedido nº{{ order.pk }}</span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
+
+<div class="card shadow-sm rounded-4 border-0 mb-4">
+    <div class="card-header bg-dark text-white text-center rounded-top-4">
+        <strong>Itens do Pedido</strong>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-auto text-center">
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço Unitário</th>
+                    <th>Quantidade</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for item in order_items %}
+                    <tr>
+                        <td>{{ item.product }}</td>
+                        <td>R${{ item.product.selling_price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>R${{ item.total }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-muted py-4">Nenhum item neste pedido.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="fw-semibold m-0">
+        Valor total: <span class="text-success">R${{ total_value }}</span>
+    </h5>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="d-flex flex-column flex-md-row gap-3">
+        <a href="{% url 'accept_order' order.pk %}" class="btn btn-success w-100">
+            <i class="bi bi-check-circle me-1"></i> Iniciar venda
+        </a>
+        <a href="{% url 'deactivate_order' order.pk %}" class="btn btn-outline-danger w-100">
+            <i class="bi bi-x-circle me-1"></i> Recusar e descartar
+        </a>
+    </div>
+</form>
+{% endblock %}

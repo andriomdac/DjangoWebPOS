@@ -5,12 +5,15 @@ from .forms import OutflowCreateForm
 from products.models import Product
 from django.contrib import messages
 from django.db import transaction
-from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.paginator import Paginator
+from orders.utils import is_there_active_orders
+from app.utils import add_pagination_to_view_context
+from django.contrib.auth.decorators import permission_required, login_required
 
 
 @login_required
-@permission_required(['outflows.add_outflow'])
+@permission_required('products.view_product', raise_exception=True)
 @transaction.atomic
 def outflow_create_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -30,7 +33,7 @@ def outflow_create_view(request, pk):
             messages.success(
                 request,
                 f'''Saída de {outflow.quantity}
-                unidade(s) do produto "{product.name} - {product.brand}"
+                unidade(s) do produto "{product.name}"
                 registrada.''')
             return redirect('product_list')
     return render(
@@ -42,24 +45,23 @@ def outflow_create_view(request, pk):
             })
 
 
-class OutflowListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    model = Outflow
-    template_name = 'outflow_list.html'
-    context_object_name = 'outflows'
-    ordering = ['-created_at']
-    paginate_by = 20
-    permission_required = 'outflows.view_outflow'
+@login_required
+@permission_required('products.delete_product', login_url='/products/list')
+def outflow_list_view(request):
+    search = request.GET.get('search')
+    outflows = Outflow.objects.all().order_by('-created_at')
+    context = {}
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search = self.request.GET.get('search')
-        if search:
-            queryset = queryset.filter(product__name__icontains=search)
-        return queryset
+    if search:
+        outflows = outflows.filter(product__name__icontains=search)
+
+    add_pagination_to_view_context(request, outflows, context, 10)
+    is_there_active_orders(request, context)
+    return render(request, 'outflow_list.html', context)
 
 
 class OutflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Outflow
     template_name = 'outflow_detail.html'
     context_object_name = 'outflow'
-    permission_required = 'outflows.view_outflow'
+    permission_required = 'products.delete_product'

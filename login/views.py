@@ -3,8 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from app.utils import delete_sale_with_no_items
 from app.utils import toggle_theme
+from django.contrib.auth.decorators import login_required, login_not_required
+from sales.utils import clean_empty_sales
 
-
+@login_not_required
 def login_view(request):
 
     if 'theme' not in request.session:
@@ -31,9 +33,12 @@ def login_view(request):
     return render(request, 'login.html')
 
 
+
+@login_required
 def logout_view(request):
 
     delete_sale_with_no_items(request=request)
+    clean_empty_sales(request)
 
     if 'sale_id' in request.session:
         messages.error(

@@ -1,68 +1,154 @@
 from django.shortcuts import render, redirect
-from sales.models import Sale, SaleItemReturn, SaleItem
-from datetime import date, datetime
-from django.db.models import Sum, F
-from products.models import Product
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
+from sales.models import Sale, SaleItem
+from datetime import datetime
+from app.utils import add_pagination_to_view_context
+from icecream import ic
+from django.contrib.auth.decorators import permission_required, login_required
+from sales.utils import clean_empty_sales
+from sales.utils import handle_sale_id_in_session
 
 
-@login_required()
+def is_this_sale_in_session(request, sale):
+    if 'sale_id' in request.session:
+        if sale.pk == request.session['sale_id']:
+            return True
+        return False
+    return False
+
+@login_required
 def dashboard_view(request):
-    if not request.user.has_perm('brands.delete_brand'):
-        return redirect('product_list')
-    # Get query_date from request, default to today
-    query_date_str = request.GET.get('query_date')  # Adjusted to match the GET method
-    try:
-        if query_date_str:
-            query_date = datetime.strptime(query_date_str, '%Y-%m-%d').date()
+    if request.user.has_perm('products.delete_product'):
+        clean_empty_sales(request)
+        content = {}
+        handle_sale_id_in_session(request, content)
+        # Set default date to today
+        date = datetime.today().date()
+
+        # If a custom dashboard date is stored in the session, use it
+        if 'dashboard_date' in request.session:
+            date_string = request.session['dashboard_date']
+            if date_string:
+                date = datetime.strptime(date_string, '%Y-%m-%d').date()
+
+        content["date"] = date
+
+        # Handle POST request (form submission)
+        if request.method == 'POST':
+
+            # Update session with a custom selected date
+            if 'date' in request.POST:
+                date_string = request.POST['date']
+                if date_string:
+                    request.session['dashboard_date'] = date_string
+                    return redirect('dashboard')
+
+            # Filter by day
+            if 'day' in request.POST:
+                request.session['date_type'] = 'day'
+                sales = Sale.objects.filter(
+                    created_at__day=date.day,
+                    created_at__month=date.month,
+                    created_at__year=date.year
+                )
+
+            # Filter by month
+            if 'month' in request.POST:
+                request.session['date_type'] = 'month'
+                sales = Sale.objects.filter(
+                    created_at__month=date.month,
+                    created_at__year=date.year
+                )
+
+            # Filter by year
+            if 'year' in request.POST:
+                request.session['date_type'] = 'year'
+                sales = Sale.objects.filter(
+                    created_at__year=date.year
+                )
+
+            # Reset to today's date and remove date_type filter
+            if 'today' in request.POST:
+                today_date_str = datetime.today().date().strftime('%Y-%m-%d')
+                request.session['dashboard_date'] = today_date_str
+                if request.session.get('date_type'):
+                    del request.session['date_type']
+                return redirect('dashboard')
+
+            # Default filter if no specific option selected
+            else:
+                sales = Sale.objects.filter(created_at__date=date)
+
         else:
-            query_date = date.today()
-    except ValueError:
-        query_date = date.today()  # Fallback to today if parsing fails
+            # GET request: default filter by exact date
+            sales = Sale.objects.filter(created_at__date=date)
 
-    # Sales data for the selected date
-    sales_today = Sale.objects.filter(created_at__date=query_date)
-    sales_total_value = sum([sale.total for sale in sales_today])
-    num_sales_today = sales_today.count()
-    num_items_sold_today = SaleItem.objects.filter(
-        sale__in=sales_today
-        ).aggregate(
-            total_items=Sum('quantity')
-            )['total_items'] or 0
+        # Reapply stored date_type filter from session, if any
+        if 'date_type' in request.session:
+            date_type = request.session['date_type']
 
-    # Returns and profit
-    returns_total_value = SaleItemReturn.objects.filter(created_at__date=query_date).aggregate(
-        total_value=Sum('value'))['total_value'] or 0.00
-    profit_today = SaleItem.objects.filter(sale__in=sales_today).annotate(
-        profit=F('quantity') * (F('product__selling_price') - F('product__cost_price'))
-    ).aggregate(total_profit=Sum('profit'))['total_profit'] or 0.00
+            if date_type == 'day':
+                sales = Sale.objects.filter(created_at__day=date.day)
+            if date_type == 'month':
+                sales = Sale.objects.filter(created_at__month=date.month)
+            if date_type == 'year':
+                sales = Sale.objects.filter(created_at__year=date.year)
 
-    # Top selling product
-    top_selling_product = SaleItem.objects.filter(sale__in=sales_today) \
-        .values('product__name') \
-        .annotate(total_quantity=Sum('quantity')) \
-        .order_by('-total_quantity') \
-        .first()
+            content['date_type'] = date_type
 
-    # Stock summary
-    total_stock_value = Product.objects.aggregate(
-        total_value=Sum(F('cost_price') * F('quantity'))
-    )['total_value'] or 0.00
-    total_stock_profit = Product.objects.aggregate(
-        total_profit=Sum((F('selling_price') - F('cost_price')) * F('quantity'))
-    )['total_profit'] or 0.00
+        # Initialize dashboard metrics
+        content["sales_quantity"] = sales.count()
+        content["total_value_sold"] = 0
+        content["total_profit"] = 0
+        content["sales"] = sales
 
-    # Context data for the template
-    context = {
-        'sales_total_value': sales_total_value,
-        'num_sales_today': num_sales_today,
-        'num_items_sold_today': num_items_sold_today,
-        'returns_total_value': returns_total_value,
-        'top_selling_product': top_selling_product,
-        'profit_today': profit_today,
-        'total_stock_value': total_stock_value,
-        'total_stock_profit': total_stock_profit,
-        'query_date': query_date,
-    }
+        discounts = 0  # Accumulator for total discounts
 
-    return render(request, 'dashboard.html', context)
+        # Iterate through sales to calculate totals
+        for sale in sales:
+            if is_this_sale_in_session(request, sale):
+                continue
+
+            sale_raw_total = 0
+
+            # Sum up raw total from all sale items (without discounts)
+            for item in sale.items.all():
+                sale_raw_total += item.total_price
+
+            sale_total_with_discounts = 0
+
+            # Sum the actual total received, considering discounts
+            for method in sale.payment_methods.all():
+                sale_total_with_discounts += method.value
+
+            # Calculate and accumulate the discount amount
+            discounts += sale_raw_total - sale_total_with_discounts
+
+            # Calculate profit for each item sold
+            for sale_item in sale.items.all():
+                content['total_profit'] += (sale_item.product.selling_price - sale_item.product.cost_price) * sale_item.quantity
+
+            # Add to total revenue
+            content['total_value_sold'] += sale.total
+
+            # Accumulate values by payment method
+            for payment_method in sale.payment_methods.all():
+                if payment_method.method_name not in content:
+                    content[payment_method.method_name] = 0
+                content[payment_method.method_name] += payment_method.value
+
+        # Final profit adjusted by total discounts
+        content['total_profit'] -= discounts
+
+        # Add pagination to the sales list (20 per page)
+        add_pagination_to_view_context(
+            request,
+            object_list=sales.order_by('-created_at'),
+            context=content,
+            per_page=20
+        )
+
+        # Render the dashboard template with calculated data
+        return render(request, template_name='dashboard.html', context=content)
+    else:
+        return redirect('product_list')

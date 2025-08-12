@@ -8,10 +8,7 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('brands', '0001_initial'),
-        ('categories', '0001_initial'),
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
@@ -21,8 +18,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100)),
                 ('cost_price', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('selling_price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('brand', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='brand', to='brands.brand')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='category', to='categories.category')),
             ],
         ),
     ]

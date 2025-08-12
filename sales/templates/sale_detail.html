@@ -1,72 +1,90 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
 {% block title %}Detalhes da Venda{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <h1 class="mb-4">Detalhes da Venda #{{sale.id}}</h1>
-    
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            Informações da Venda
-        </div>
-        <div class="card-body">
-            <p><strong>Total da Venda:</strong> R$ {{ sale.total }}</p>
-            <p><strong>Data de Criação:</strong> {{ sale.created_at|date:"d/m/Y H:i" }}</p>
-            <p><strong>Última Atualização:</strong> {{ sale.updated_at|date:"d/m/Y H:i" }}</p>
-        </div>
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">
+            Venda #{{ sale.id }}
+        </h2>
+        <a href="{% url 'sale_list' %}" class="btn btn-outline-primary shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Voltar à Lista
+        </a>
     </div>
+</div>
 
-    <div class="card mb-4">
-        <div class="card-header bg-secondary text-white">
-            Itens da Venda
-        </div>
-        <div class="card-body">
-            {% if sale_items %}
-                <table class="table table-striped">
-                    <thead>
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
+
+<!-- Informações da Venda -->
+<div class="card shadow-sm rounded-4 border-0 mb-4">
+    <div class="card-header bg-primary text-white fw-semibold">
+        Informações da Venda
+    </div>
+    <div class="card-body">
+        <p><i class="bi bi-cash-coin me-2"></i><strong>Total:</strong> R$ {{ sale.total }}</p>
+        <p><i class="bi bi-calendar-plus me-2"></i><strong>Criada em:</strong> {{ sale.created_at|date:"d/m/Y H:i" }}</p>
+        <p><i class="bi bi-clock-history me-2"></i><strong>Última Atualização:</strong> {{ sale.updated_at|date:"d/m/Y H:i" }}</p>
+    </div>
+</div>
+
+<!-- Itens da Venda -->
+<div class="card shadow-sm rounded-4 border-0 mb-4">
+    <div class="card-header bg-secondary text-white fw-semibold">
+        Itens da Venda
+    </div>
+    <div class="card-body p-0">
+        {% if sale_items %}
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-auto text-center">
+                    <tr>
+                        <th>#</th>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço Unitário</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    {% for item in sale_items %}
                         <tr>
-                            <th>#</th>
-                            <th>Produto</th>
-                            <th>Quantidade</th>
-                            <th>Preço Unitário</th>
-                            <th>Total</th>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>R$ {{ item.price }}</td>
+                            <td>R$ {{ item.total_price }}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in sale_items %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ item.product.name }}</td>
-                                <td>{{ item.quantity }}</td>
-                                <td>R$ {{ item.price }}</td>
-                                <td>R$ {{ item.total_price }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p class="text-muted">Nenhum item na venda.</p>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header bg-info text-white">
-            Métodos de Pagamento
-        </div>
-        <div class="card-body">
-            {% if payment_methods %}
-                <ul class="list-group">
-                    {% for method in payment_methods %}
-                        <li class="list-group-item">{{ method.method_name }} - R$ {{ method.value }}</li>
                     {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-muted">Nenhum método de pagamento registrado.</p>
-            {% endif %}
-        </div>
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted p-3">Nenhum item na venda.</p>
+        {% endif %}
     </div>
+</div>
 
-    <a href="{% url 'sale_list' %}" class="btn btn-outline-primary">Voltar à Lista de Vendas</a>
+<!-- Métodos de Pagamento -->
+<div class="card shadow-sm rounded-4 border-0 mb-4">
+    <div class="card-header bg-info text-white fw-semibold">
+        Métodos de Pagamento
+    </div>
+    <div class="card-body">
+        {% if payment_methods %}
+            <ul class="list-group list-group-flush">
+                {% for method in payment_methods %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><i class="bi bi-credit-card me-2"></i>{{ method.method_name }}</span>
+                        <span class="fw-semibold">R$ {{ method.value }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Nenhum método de pagamento registrado.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

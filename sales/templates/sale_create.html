@@ -1,67 +1,92 @@
 {% extends "base.html" %}
+
 {% block title %}Venda{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-6">
-            <h4>Adicionar Produto</h4>
-            {% include 'components/_messages.html' %}
+<div class="pt-3 pb-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold text-gradient m-0">Nova Venda</h2>
+    </div>
+</div>
 
-            {% if form.errors %}
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <div class="alert alert-warning">{{ error }}</div>
-                    {% endfor %}
-                {% endfor %}
-            {% endif %}
-            <form method="post" class="border p-4 rounded shadow-sm bg-auto">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary btn-lg w-100">Adicionar ao Carrinho</button><br><br>
-                {% if sale_has_items %}
-                <a href="{% url 'sale_finalize' %}" type="button" class="btn btn-success btn-lg w-100">Prosseguir para Pagamentos</a>
-                {% endif %}
-            </form>
-        </div>
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        {% include 'components/_messages.html' %}
+    </div>
+</div>
 
-        <div class="col-md-6">
-            <h4>Carrinho</h4>
-            <div class="border p-4 rounded shadow-sm bg-auto">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5>Total da Venda:</h5>
-                    <span class="badge text-bg-success fs-5 px-3 py-2">
-                        R$ {{sale_total}}
-                    </span>
-                </div>
-                <div class="overflow-auto" style="max-height: 300px;">
-                    <ol class="list-group">
-                        {% for item in sale_items reversed %}
-                        <li class="list-group-item d-flex align-items-center">
-                            <!-- Fixed on the left -->
-                            <div class="flex-grow-1">
-                                <div class="fw-bold">{{ item.product }}</div>
-                                <small class="text-muted">{{ item.product.brand }}</small>
-                            </div>
-                            <!-- Fixed on the right -->
-                            <div class="d-flex align-items-center">
-                                <span class="badge text-bg-warning rounded-pill me-2">
-                                    R$ {{ item.total_price }}
-                                </span>
-                                <span class="badge text-bg-primary rounded-pill me-2">
-                                    {{ item.quantity }}
-                                </span>
-                                <a href="{% url 'sale_item_delete' item.pk %}" class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>
-                            </div>
-                        </li>
+<div class="row g-4">
+    <!-- Coluna de Adição de Produto -->
+    <div class="col-md-6">
+        <div class="card shadow-sm rounded-4 border-0">
+            <div class="card-header bg-primary text-white fw-semibold">
+                <i class="bi bi-plus-circle me-1"></i> Adicionar Produto
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-warning">{{ error }}</div>
                         {% endfor %}
-                    </ol>
-                    
-                    
-                </div>
-                
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+                        <i class="bi bi-cart-plus me-1"></i> Adicionar ao Carrinho
+                    </button>
+                    {% if sale_has_items %}
+                        <a href="{% url 'sale_finalize' %}" class="btn btn-success btn-lg w-100 mt-3">
+                            <i class="bi bi-credit-card-2-front me-1"></i> Prosseguir para Pagamentos
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coluna do Carrinho -->
+    <div class="col-md-6">
+        <div class="card shadow-sm rounded-4 border-0">
+            <div class="card-header bg-success text-white fw-semibold d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-bag-fill me-1"></i> Carrinho</span>
+                <span class="badge bg-light text-success fs-6 px-3 py-2">
+                    Total: R$ {{ sale_total }}
+                </span>
+            </div>
+            <div class="card-body p-0">
+                {% if sale_items %}
+                    <div class="overflow-auto p-3" style="max-height: 320px;">
+                        <ol class="list-group list-group-flush">
+                            {% for item in sale_items reversed %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    {% if item.product.product_image %}
+                                        <img src="{{ item.product.product_image.url }}" alt="{{ item.product }}" class="img-thumbnail me-3" style="width: 50px; height: 50px;">
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-semibold">{{ item.product }}</div>
+                                        <small class="text-muted">Qty: {{ item.quantity }}</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge text-bg-warning rounded-pill me-2">
+                                        R$ {{ item.total_price }}
+                                    </span>
+                                    <a href="{% url 'sale_item_delete' item.pk %}" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                        
+                        </ol>
+                    </div>
+                {% else %}
+                    <div class="p-3 text-muted">Nenhum item adicionado ainda.</div>
+                {% endif %}
             </div>
         </div>
     </div>

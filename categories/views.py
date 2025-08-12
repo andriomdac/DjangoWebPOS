@@ -1,90 +1,58 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import CreateView, ListView, UpdateView, DetailView
-from .models import Category
-from .forms import CategoryForm, CategoryUpdateForm
-from django.urls import reverse_lazy
-from django.db.models import ProtectedError
+from django.shortcuts import render, redirect
+from .forms import CategoryForm
+from django.http import HttpResponse
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from .models import Category
+from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
+from orders.utils import is_there_active_orders
+from django.contrib.auth.decorators import permission_required, login_required
 
 
-class CategoryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    model = Category
-    template_name = 'category_create.html'
-    form_class = CategoryForm
-    success_url = reverse_lazy('category_list')
-    permission_required = 'add_category'
+@login_required
+@permission_required('products.delete_product', raise_exception=True)
+def category_add_view(request):
+    form = CategoryForm()
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(
-            self.request,
-            f'Categoria "{self.object.name}" criada com sucesso!'
-            )
-        return response
-
-
-class CategoryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    model = Category
-    template_name = 'category_list.html'
-    context_object_name = 'categories'
-    paginate_by = 20
-    permission_required = 'categories.view_category'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data()
-        return context
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search = self.request.GET.get('search')
-        if search:
-            queryset = queryset.filter(name__icontains=search)
-        return queryset
-
-
-class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    model = Category
-    template_name = 'category_create.html'
-    form_class = CategoryUpdateForm
-    success_url = reverse_lazy('category_list')
-    permission_required = 'categories.change_category'
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(
-            self.request,
-            f'Categoria "{self.object.name}" alterada com sucesso!'
-            )
-        return response
-
-
-@login_required()
-@permission_required(['categories.delete_category'])
-def category_delete_view(request, pk):
-    category_object = get_object_or_404(Category, id=pk)
     if request.method == 'POST':
-        try:
-            category_object.delete()
-            messages.success(request, f'Categoria "{category_object.name}" deletada com sucesso!')
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Categoria adicionada com sucesso.')
             return redirect('category_list')
-        except ProtectedError:
-            return render(request, template_name='category_delete.html', context={
-                'object': category_object,
-                'message': f'''Não é possível deletar a categoria "{category_object.name}",
-                            pois está sendo utilizada por um ou mais produtos'''
-                })
-    return render(
-        request,
-        template_name='category_delete.html',
-        context={
-            'object': category_object
-            })
+    context = {
+        "form": form
+    }
+    if request.user.has_perm('products.delete_product'):
+        context['has_perm'] = 'delete_product'
+    return render(request, template_name='category_add.html', context=context)
 
+@login_required
+@permission_required('products.view_product', raise_exception=True)
+def category_list_view(request):
+    categories = Category.objects.all().order_by('category')
+    paginator = Paginator(categories, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-class CategoryDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
-    model = Category
-    template_name = 'category_detail.html'
-    context_object_name = 'category'
-    permission_required = 'categories.view_category'
+    if request.method == 'POST':
+        if request.user.has_perm('products.delete_product'):
+            if 'category_delete_id' in request.POST:
+                try:
+                    get_object_or_404(Category, id=int(request.POST['category_delete_id'])).delete()
+                    messages.success(request, 'Categoria deletada com sucesso.')
+                    return redirect('category_list')
+                except:
+                    messages.error(request, 'Erro ao deletar. Categoria está sendo utilizada em algum produto', extra_tags='danger')
+                    return redirect('category_list')
+        else:
+            messages.warning(request, 'Acesso Negado', extra_tags='danger')
+
+    context = {
+        "page_obj": page_obj,
+        "paginator": paginator,
+    }
+    if request.user.has_perm('products.delete_product'):
+        context['has_perm'] = 'delete_product'
+    is_there_active_orders(request, context)
+    return render(request, template_name='category_list.html', context=context)
