@@ -70,8 +70,9 @@ Acesse o projeto em:
 ## ⚙️ Tecnologias Utilizadas
 - Python 3
 - Django
-- SQLite (ou outro banco configurado)
+- SQLite
 - HTML/CSS
+- Bootstrap 5
 
 ---
 
